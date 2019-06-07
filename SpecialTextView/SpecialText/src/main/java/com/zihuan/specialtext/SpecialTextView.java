@@ -10,7 +10,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 public class SpecialTextView extends AppCompatTextView {
-    String TAG="SpecialTextView";
+    String TAG = "SpecialTextView";
+
     public SpecialTextView(Context context) {
         super(context);
     }
@@ -27,7 +28,11 @@ public class SpecialTextView extends AppCompatTextView {
     public void setSpecialText(@NonNull String wholetext, int color, @NonNull String special) {
         int start = wholetext.indexOf(special);
         int end = start + special.length();
-        setSpecialText(wholetext, color, start, end);
+        try {
+            setSpecialText(wholetext, color, start, end);
+        } catch (Exception e) {
+            Log.e(TAG, "暂时不能用于RecycleView等列表中(或者自己手动处理下,滚动到当前view时重新设置setSpecialText()) Exception>>>> " + e.toString());
+        }
     }
 
     public void setSpecialText(@NonNull String wholetext, int color, int start, int end) {
@@ -57,8 +62,8 @@ public class SpecialTextView extends AppCompatTextView {
         if (start > 0) {
             int end = start + special.length();
             getSpannable(mWholeText).setSpan(new ForegroundColorSpan(getResources().getColor(color)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }else {
-            Log.e(TAG,"没有发现当前字符>>>> "+special);
+        } else {
+            Log.e(TAG, "没有发现当前字符>>>> " + special);
 //            throw new RuntimeException("没有发现当前字符>>>> "+special);
         }
         return this;

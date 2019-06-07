@@ -21,15 +21,15 @@ public class MainActivity extends AppCompatActivity {
         String f = "蛤蛤";
         SpecialTextView tv_special = findViewById(R.id.tv_text);
 //        tv_special.setSpecialText(a, R.color.colorPrimary, b);
-        tv_special.setWhole(a)
-                .specialTextAppend(b, R.color.colorPrimary)
-                .specialTextAppend(c, R.color.colorAccent)
-                .specialTextAppend(d, R.color.colorPrimaryDark)
-                .specialTextAppend(e, R.color.colorPrimary)
-                .specialTextAppend(f, R.color.colorPrimary)
-                .specialTextComplete();
-//        String str="123456789";
-//        tv_special.setSpecialText(str,"000");
+//        tv_special.setWhole(a)
+//                .specialTextAppend(b, R.color.colorPrimary)
+//                .specialTextAppend(c, R.color.colorAccent)
+//                .specialTextAppend(d, R.color.colorPrimaryDark)
+//                .specialTextAppend(e, R.color.colorPrimary)
+//                .specialTextAppend(f, R.color.colorPrimary)
+//                .specialTextComplete();
+        String str="from 30 EUR /hr";
+        tv_special.setSpecialText(str, R.color.colorAccent,"30 EUR /hr");
 //        tv_special.setText(str);
     }
 }
