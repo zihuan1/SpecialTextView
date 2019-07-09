@@ -2,6 +2,7 @@ package com.zihuan.rsa
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Toast
 
 import com.zihuan.specialtext.SpecialTextView
@@ -9,20 +10,26 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
-    internal var a = "天地玄黄，宇宙洪荒,日月盈昃，辰宿列张。"
+    internal var a = "天地玄黄，宇宙洪荒,日月盈昃，辰宿列张。天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
     internal var b = "玄黄"
     internal var c = "洪荒"
     internal var d = "盈昃"
     internal var e = "列张"
     internal var f = "蛤蛤"
 
+    var g = "更多"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setOneSpecialText()
+//        setOneSpecialText()
 //        setManySpecialText()
 //        setSpecialAndClick()
-
+        setManySpecialText()
+        tv_text.post {
+            Log.e("行数和当前字符实际宽度", tv_text.lineCount.toString() + " " + tv_text.paint.measureText(a))
+            Log.e("当前行数所占宽度", tv_text.layout.getLineWidth(0).toString())
+            Log.e("当前行数字符详情", a.substring(tv_text.layout.getLineStart(0),tv_text.layout.getLineEnd(0)))
+        }
     }
 
     //设置单个
@@ -38,6 +45,8 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
                 .specialTextAppend(d, R.color.colorPrimaryDark)
                 .specialTextAppend(e, R.color.color_fe68)
                 .specialTextAppend(f, R.color.colorPrimary)
+//                .setImage(R.mipmap.ic_launcher)
+                .setEndText(g, R.color.color_fe68)
                 .specialTextComplete()
     }
 
