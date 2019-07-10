@@ -20,6 +20,7 @@ import android.view.WindowManager
 class SpecialTextView : AppCompatTextView {
     private var TAG = "SpecialTextView"
     private lateinit var mWholeText: String//完整字符串
+    private lateinit var mCopyWholeText: String//完整字符串
     private var isNeedMovementMethod = false//是否需要设置分段点击的方法
     private var mSpannableString: SpannableStringBuilder? = null
     private var mSpecialTextClick: SpecialTextClick? = null
@@ -44,6 +45,7 @@ class SpecialTextView : AppCompatTextView {
      */
     fun setWhole(wholeString: String): SpecialTextView {
         mWholeText = wholeString
+        mCopyWholeText = wholeString
         return this
     }
 
@@ -99,14 +101,17 @@ class SpecialTextView : AppCompatTextView {
      */
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     fun setEndText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, targetLine: Int = maxLines - 1, extra: Int = 1): SpecialTextView {
-//        先设置文本否则拿不到宽度
+        //先设置文本否则拿不到宽度
         this.text = mWholeText
-//        如果图片的
+        //如果图片的
         var imgWidth = if (imgRes != -1) BitmapFactory.decodeResource(resources, imgRes).width else 0
         post {
+            if (targetLine == Int.MAX_VALUE) {
+                maxLines = lineCount
+            }
             Logger("行数和当前字符实际宽度" + lineCount.toString() + " " + paint.measureText(mWholeText))
             var targetLineText = mWholeText.substring(layout.getLineStart(targetLine), layout.getLineEnd(targetLine))
-//如果目标行大于当前屏幕宽度就减去当前行的N个字符+extra N是最后要显示的特殊字符+extra是给图片预留的空间,可以自定义占几个字符宽度，如果图片大可以多占，反之少占
+            //如果目标行大于当前屏幕宽度就减去当前行的N个字符+extra N是最后要显示的特殊字符+extra是给图片预留的空间,可以自定义占几个字符宽度，如果图片大可以多占，反之少占
             //获取当前屏幕的宽度
             val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             val dm = DisplayMetrics()
@@ -133,8 +138,18 @@ class SpecialTextView : AppCompatTextView {
                 //追加文字和图片所占长度
                 var textPlusImgLen = text.length.times(textTimes).plus(extra)
                 var cutStart = targetLineText.length.minus(textPlusImgLen)
-                mWholeText = mWholeText.substring(0, cutStart)
+                if (cutStart > 0) {
+                    mWholeText = mWholeText.substring(0, cutStart)
+                }
                 Logger("目标行切割后$mWholeText")
+            } else {
+                Logger("目标行满足当前字符需要宽度")
+                mWholeText = mWholeText.substring(0, layout.getLineEnd(targetLine))
+            }
+            var jiance = mWholeText.substring(mWholeText.length - 2, mWholeText.length)
+            if (jiance == "\n\n") {
+                Logger("包含两个回车，去除一个")
+                mWholeText = mWholeText.substring(0, mWholeText.length - 1)
             }
             mWholeText += text.plus(if (imgRes != -1) "  " else "")//如果末尾有图片的话，为图片预留一个空格占位
             getSpannableString()
@@ -176,7 +191,7 @@ class SpecialTextView : AppCompatTextView {
 
 
     private fun setSpecialText(special: String, color: Int) {
-        if (TextUtils.isEmpty(mWholeText)) {
+        if (TextUtils.isEmpty(mWholeText)) {//要设置最后出现的位置
             Log.e(TAG, "mWholeText为空>>>> 请先调用setWhole函数")
             return
         }
@@ -240,10 +255,14 @@ class SpecialTextView : AppCompatTextView {
 
     }
 
-    fun Logger(msg: String) {
-        if (BuildConfig.DEBUG) {
-            Log.e(TAG, mWholeText)
+    private var enabledLog = false
+    fun setEnabledLog(enabled: Boolean = false) {
+        enabledLog = enabled
+    }
 
+    private fun Logger(msg: String) {
+        if (enabledLog) {
+            Log.e(TAG, msg)
         }
     }
 

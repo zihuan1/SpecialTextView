@@ -30,15 +30,24 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     internal var e = "列张"
     internal var f = "蛤蛤"
     var g = "更多"
+    var test = "\"Clearly you can bow your head, why should I cry?\"\n" +
+            "\n" +
+            "\"How can the person who disappoints you disappoint you only once?\"\n" +
+            "\n" +
+            "Last year, the interactive device exhibition of the Gyroscopic History Museum was held in Beijing and Tianjin at the same time. In less than a week, we received nearly 3,000 private letters and hundreds of love relics. Nine days, nearly 20,000 + people entered the pavilion.\n" +
+            "\n" +
+            "After six months of careful polishing, the gyroscopic History Museum has returned and opened the 100-city tour exhibition. This time, we will bring the \"gyroscopic history museum\" to more cities."
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setOneSpecialText()
-        setManySpecialText()
+//        setOneSpecialText()
+//        setManySpecialText()
+        tv_text3.setEnabledLog(true)
+//        test.replace("\n", "")
         setEndText()
-        special()
+//        special()
     }
 
     //设置单个
@@ -51,9 +60,9 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         tv_text2.setWhole(a)
                 .specialTextAppend(b, R.color.colorPrimary)
                 .specialTextAppend(c, R.color.colorAccent, true)
-                .specialTextAppend(d, R.color.colorPrimaryDark,true)
-                .specialTextAppend(e, R.color.color_fe68,true)
-                .specialTextAppend(f, R.color.colorPrimary,true)
+                .specialTextAppend(d, R.color.colorPrimaryDark, true)
+                .specialTextAppend(e, R.color.color_fe68, true)
+                .specialTextAppend(f, R.color.colorPrimary, true)
                 .setImage(R.mipmap.ic_launcher, enabledClick = true)
                 .specialTextComplete()
     }
@@ -61,12 +70,19 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
-        tv_text3.setWhole(a + a1)
-                .setSpecialListener(this)
-                .setEndText(g, R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true, 1)
+//        缺少点击展开功能和动画
+        tv_text3.setWhole(test)
+                .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
-
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun specialClick(tag: String) {
+        if (tv_text3.maxLines == Int.MAX_VALUE) {
+            tv_text3.maxLines=5
+        } else {
+            tv_text3.maxLines= Int.MAX_VALUE
+        }
+        tv_text3.setWhole(test)
+                .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
         Toast.makeText(this, tag, Toast.LENGTH_SHORT).show()
     }
 
