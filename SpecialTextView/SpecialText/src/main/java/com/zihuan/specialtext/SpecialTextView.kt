@@ -213,6 +213,7 @@ class SpecialTextView : AppCompatTextView {
         if (end == -1) {
             end = start + special.length
         }
+        if (start == -1) return this//未找到字符位置
         mSpannableString?.setSpan(object : ClickableSpan() {
             override fun updateDrawState(ds: TextPaint) {
                 ds.isUnderlineText = underline//是否设置下划线
