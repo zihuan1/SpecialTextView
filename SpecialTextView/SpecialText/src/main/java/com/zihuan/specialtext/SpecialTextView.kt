@@ -20,10 +20,11 @@ import android.view.WindowManager
 class SpecialTextView : AppCompatTextView {
     private var TAG = "SpecialTextView"
     private lateinit var mWholeText: String//完整字符串
-    private lateinit var mCopyWholeText: String//完整字符串
+    private lateinit var mWholeTextCopy: String//完整字符串
     private var isNeedMovementMethod = false//是否需要设置分段点击的方法
     private var mSpannableString: SpannableStringBuilder? = null
     private var mSpecialTextClick: SpecialTextClick? = null
+    private var mSpecialTextFirstIndex = false//默认取关键字最后出现的位置
 
     constructor(context: Context) : super(context) {
         highlightColor = Color.TRANSPARENT
@@ -45,7 +46,7 @@ class SpecialTextView : AppCompatTextView {
      */
     fun setWhole(wholeString: String): SpecialTextView {
         mWholeText = wholeString
-        mCopyWholeText = wholeString
+        mWholeTextCopy = wholeString
         return this
     }
 
@@ -90,25 +91,48 @@ class SpecialTextView : AppCompatTextView {
     }
 
 
+    private var mEndText = ""
+    private var mEndTextColor = 0
+    private var mEnabledClick = false
+    private var mImageRes = 0
+    private var mUnderline = false
+    //    private var mTargetLine = 0
+    private var mExtraLength = 0
+    //首次设置的行数
+    private val mEndTextLine by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            maxLines
+        } else {
+            1
+        }
+    }
+
     /****
      * 这个方法暂时不能和其他设置特殊字符串的方法一起使用，只能单独使用
-     * @param targetLine 目标行 默认获取最后一行
+     * 系统版本在4.1以上才适用
      * @param imgRes 追加在最后的图片
      * @param enabledClick 是否需要点击事件
      * @param underline 是否需要下划线
-     * @param extra 额外追加的截取长度，比如用两个逗号替换成两个汉字
+     * @param extra 额外追加的截取长度，比如用两个逗号替换成两个汉字这种情况就需要多截取几个长度
      *  在此处追加图片耦合度比较高应该拆分出来
      */
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-    fun setEndText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, targetLine: Int = maxLines - 1, extra: Int = 1): SpecialTextView {
-        //先设置文本否则拿不到宽度
+    fun setEndText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): SpecialTextView {
+        mEndText = text
+        mEndTextColor = color
+        mImageRes = imgRes
+        mEnabledClick = enabledClick
+        mUnderline = underline
+//        mTargetLine = targetLine
+        mExtraLength = extraLength
+        mEndTextLine
+        isEndText = true
+        //先设置文本否则拿不到宽度和行数
         this.text = mWholeText
         //如果图片的
         var imgWidth = if (imgRes != -1) BitmapFactory.decodeResource(resources, imgRes).width else 0
+        var targetLine: Int = maxLines - 1
         post {
-            if (targetLine == Int.MAX_VALUE) {
-                maxLines = lineCount
-            }
             Logger("行数和当前字符实际宽度" + lineCount.toString() + " " + paint.measureText(mWholeText))
             var targetLineText = mWholeText.substring(layout.getLineStart(targetLine), layout.getLineEnd(targetLine))
             //如果目标行大于当前屏幕宽度就减去当前行的N个字符+extra N是最后要显示的特殊字符+extra是给图片预留的空间,可以自定义占几个字符宽度，如果图片大可以多占，反之少占
@@ -136,7 +160,7 @@ class SpecialTextView : AppCompatTextView {
             //如果当前行所剩宽度小于textLineWidth实际宽度 切割掉text.length个字符
             if (Math.abs(width.minus(endLineWidth)) < textLineWidth.plus(imgWidth)) {
                 //追加文字和图片所占长度
-                var textPlusImgLen = text.length.times(textTimes).plus(extra)
+                var textPlusImgLen = text.length.times(textTimes).plus(extraLength)
                 var cutStart = targetLineText.length.minus(textPlusImgLen)
                 if (cutStart > 0) {
                     mWholeText = mWholeText.substring(0, cutStart)
@@ -152,7 +176,7 @@ class SpecialTextView : AppCompatTextView {
                 mWholeText = mWholeText.substring(0, mWholeText.length - 1)
             }
             mWholeText += text.plus(if (imgRes != -1) "  " else "")//如果末尾有图片的话，为图片预留一个空格占位
-            getSpannableString()
+            getNewSpannableString()
             Logger("目标行拼接后$mWholeText")
             if (imgRes != -1) {
                 setImage(imgRes)
@@ -196,18 +220,27 @@ class SpecialTextView : AppCompatTextView {
             return
         }
         getSpannableString()
-        val start = mWholeText.indexOf(special)
+        val start = getSpecialIndexOf(special)
         val end = start + special.length
         try {
             mSpannableString?.setSpan(ForegroundColorSpan(resources.getColor(color)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         } catch (e: Exception) {
+//            post方法也许能解决
             Log.e(TAG, "没有发现当前字符>>>> " + special
                     + "\n暂时不能用于RecycleView等列表中(或者自己手动处理下,滚动到当前view时重新设置setSpecialText()) Exception>>>> " + e.toString())
         }
     }
 
+    //判断当前是否是追加特殊字符
+    private var isEndText = false
+
     /***
      * 点击事件方法
+     * @param enabledClick 是否开启点击事件
+     * @param special 特殊字符串
+     * @param start 点击事件开始的位置
+     * @param end 点击事件结束的位置
+     * @param underline 是否需要下划线
      */
     fun setSpecialClick(enabledClick: Boolean = false, special: String, start: Int = -1, end: Int = -1, underline: Boolean = false): SpecialTextView {
         if (!enabledClick) return this
@@ -223,7 +256,7 @@ class SpecialTextView : AppCompatTextView {
         var start = start
         var end = end
         if (start == -1) {
-            start = mWholeText.indexOf(special)
+            start = getSpecialIndexOf(special)
         }
         if (end == -1) {
             end = start + special.length
@@ -235,10 +268,51 @@ class SpecialTextView : AppCompatTextView {
             }
 
             override fun onClick(widget: View) {
+                resetEndText()
                 mSpecialTextClick?.specialClick(special)
             }
         }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         return this
+    }
+
+    private fun resetEndText() {
+        if (isEndText) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                setWhole(mWholeTextCopy)
+                if (maxLines == mEndTextLine) {
+                    text = mWholeTextCopy
+                    post {
+                        maxLines = lineCount
+                        setEndText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+                    }
+                } else {
+                    maxLines = mEndTextLine
+                    setEndText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+                }
+            }
+        }
+    }
+
+    /***
+     *设置关键字第一次出现的位置
+     * 也可以指定关键字的位置
+     */
+    fun setFirstIndexOf(): SpecialTextView {
+        mSpecialTextFirstIndex = true
+        return this
+    }
+
+    /***
+     *设置关键字最后出现的位置
+     */
+    fun setLastIndexOf(): SpecialTextView {
+        mSpecialTextFirstIndex = false
+        return this
+    }
+
+
+    private fun getSpecialIndexOf(special: String): Int {
+        return if (mSpecialTextFirstIndex) mWholeText.indexOf(special) else mWholeText.lastIndexOf(special)
     }
 
     //设置字符串完成
@@ -250,9 +324,13 @@ class SpecialTextView : AppCompatTextView {
         text = mSpannableString
     }
 
+
     private fun getSpannableString() {
         if (mSpannableString == null) mSpannableString = SpannableStringBuilder(mWholeText)
+    }
 
+    private fun getNewSpannableString() {
+        mSpannableString = SpannableStringBuilder(mWholeText)
     }
 
     private var enabledLog = false

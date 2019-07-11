@@ -42,10 +42,9 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        setOneSpecialText()
-//        setManySpecialText()
         tv_text3.setEnabledLog(true)
-//        test.replace("\n", "")
+        setOneSpecialText()
+        setManySpecialText()
         setEndText()
 //        special()
     }
@@ -74,15 +73,30 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         tv_text3.setWhole(test)
                 .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
+
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun specialClick(tag: String) {
-        if (tv_text3.maxLines == Int.MAX_VALUE) {
-            tv_text3.maxLines=5
-        } else {
-            tv_text3.maxLines= Int.MAX_VALUE
+        when (tag) {
+            "more" -> {
+//                var line = tv_text3.maxLines
+//                if (line == 5) {
+//                    tv_text3.text = test
+//                    tv_text3.post {
+//                        line = tv_text3.lineCount
+//                        tv_text3.maxLines = line
+//                        tv_text3.setWhole(test)
+//                                .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
+//                    }
+//                } else {
+//                    line = 5
+//                    tv_text3.maxLines = line
+//                    tv_text3.setWhole(test)
+//                            .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
+//
+//                }
+            }
         }
-        tv_text3.setWhole(test)
-                .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
+
         Toast.makeText(this, tag, Toast.LENGTH_SHORT).show()
     }
 
