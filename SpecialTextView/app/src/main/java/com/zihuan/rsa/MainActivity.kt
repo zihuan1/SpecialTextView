@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     internal var a = "天地玄黄，宇宙洪荒,日月盈昃，辰宿列张。"
-    var a1 = "天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
+    internal var a1 = "天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
     internal var b = "玄黄"
     internal var c = "洪荒"
     internal var d = "盈昃"
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
             "Last year, the interactive device exhibition of the Gyroscopic History Museum was held in Beijing and Tianjin at the same time. In less than a week, we received nearly 3,000 private letters and hundreds of love relics. Nine days, nearly 20,000 + people entered the pavilion.\n" +
             "\n" +
             "After six months of careful polishing, the gyroscopic History Museum has returned and opened the 100-city tour exhibition. This time, we will bring the \"gyroscopic history museum\" to more cities."
-
+    var test2 = "\"阿黛侬国家美术馆由建筑大师Theodor Höijer(1843–1910)设计，该建筑在1887年春天竣工，并于1887年11月18日正式揭牌投入使用。阿黛侬是赫尔辛基最受欢迎的博物馆之一，它和另两个艺术馆一起组成了芬兰国家艺术画廊。该博物馆坐落于中央火车站广场南侧。博物馆收藏了从18世纪以来的各种芬兰艺术品，其中包含650件国际艺术品，其中之一便是著名的梵高1890年作品《瓦兹河畔欧韦的街道》。除此之外许多艺术家的作品都在该博物馆中展出，该建筑由政府房地产提供商Senate Properties拥有。\\\""
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
 //        缺少点击展开功能和动画
-        tv_text3.setWhole(test)
+        tv_text3.setWhole(a)
                 .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
 

@@ -15,7 +15,9 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.util.DisplayMetrics
+import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.LinearLayout
 
 
 class SpecialTextView : AppCompatTextView {
@@ -26,18 +28,38 @@ class SpecialTextView : AppCompatTextView {
     private var mSpannableString: SpannableStringBuilder? = null
     private var mSpecialTextClick: SpecialTextClick? = null
     private var mSpecialTextFirstIndex = false//默认取关键字最后出现的位置
+    private var leftMargin = 0
+    private var rightMargin = 0
+    private var mEndText = ""
+    private var mEndTextColor = 0
+    private var mEnabledClick = false
+    private var mImageRes = 0
+    private var mUnderline = false
+    private var mExtraLength = 0
 
     constructor(context: Context) : super(context) {
-        highlightColor = Color.TRANSPARENT
+        initParams()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        highlightColor = Color.TRANSPARENT
+        initParams()
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        initParams()
+    }
+
+
+    private fun initParams() {
         //        设置单段点击后背景色透明
         highlightColor = Color.TRANSPARENT
+        post {
+            //左右边距(只算了view距父view的边距，没有算父view距屏幕的边距，使用的时候注意一下)
+            var par = layoutParams as ViewGroup.MarginLayoutParams
+            leftMargin = par.leftMargin
+            rightMargin = par.rightMargin
+            Logger("leftMargin $leftMargin")
+        }
     }
 
     /***
@@ -91,14 +113,6 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
-
-    private var mEndText = ""
-    private var mEndTextColor = 0
-    private var mEnabledClick = false
-    private var mImageRes = 0
-    private var mUnderline = false
-    //    private var mTargetLine = 0
-    private var mExtraLength = 0
     //首次设置的行数
     private val mEndTextLine by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -107,6 +121,7 @@ class SpecialTextView : AppCompatTextView {
             1
         }
     }
+
 
     /****
      * 这个方法暂时不能和其他设置特殊字符串的方法一起使用，只能单独使用
@@ -119,23 +134,23 @@ class SpecialTextView : AppCompatTextView {
      */
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     fun setEndText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): SpecialTextView {
-        mEndText = text
-        mEndTextColor = color
-        mImageRes = imgRes
-        mEnabledClick = enabledClick
-        mUnderline = underline
-//        mTargetLine = targetLine
-        mExtraLength = extraLength
-        mEndTextLine
-        isEndText = true
+        mEndText = text; mEndTextColor = color; mImageRes = imgRes; mEnabledClick = enabledClick; mUnderline = underline; mExtraLength = extraLength; mEndTextLine; isEndText = true
         //先设置文本否则拿不到宽度和行数
         this.text = mWholeText
+        Logger("原始字符串 $mWholeText")
         //如果图片的
         var imgWidth = if (imgRes != -1) BitmapFactory.decodeResource(resources, imgRes).width else 0
         var targetLine: Int = maxLines - 1
         post {
-            Logger("行数和当前字符实际宽度" + lineCount.toString() + " " + paint.measureText(mWholeText))
+            var wholeLen = paint.measureText(mWholeText)
+            Logger("设置的最大行数 $maxLines 实际行数 $lineCount 字符串实际宽度 $wholeLen")
+            var lineGreaterMax = if (lineCount < maxLines) {//如果实际行数小于设置的最大行数，设置到实际的最后一行
+                Log.e(TAG, "实际行数小于设置的最大行数")
+                targetLine = lineCount - 1
+                false
+            } else true
             var targetLineText = mWholeText.substring(layout.getLineStart(targetLine), layout.getLineEnd(targetLine))
+            Logger("目标字符串 $targetLineText")
             //如果目标行大于当前屏幕宽度就减去当前行的N个字符+extra N是最后要显示的特殊字符+extra是给图片预留的空间,可以自定义占几个字符宽度，如果图片大可以多占，反之少占
             //获取当前屏幕的宽度
             val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -144,7 +159,6 @@ class SpecialTextView : AppCompatTextView {
             val width = dm.widthPixels
             //获取当前行的实际宽度（能看到的内容的宽度，不算没有显示出来的）
             val endLineWidth = layout.getLineWidth(targetLine)
-            Logger("当前行数所占宽度$endLineWidth")
             //测量追加字符在当前view的配置下的实际宽度加上末尾图片的宽度
             var textLineWidth = paint.measureText(text)
             //图片的宽度是追加文字的几倍
@@ -156,25 +170,25 @@ class SpecialTextView : AppCompatTextView {
                 }
                 else -> 1//图片的宽度小于文本
             }
-            Logger("原始字符串$mWholeText")
-            Logger("目标字符串$targetLineText")
-            //如果当前行所剩宽度小于textLineWidth实际宽度 切割掉text.length个字符
-            if (Math.abs(width.minus(endLineWidth)) < textLineWidth.plus(imgWidth)) {
-                //追加文字和图片所占长度
-                var textPlusImgLen = text.length.times(textTimes).plus(extraLength)
-                var cutStart = targetLineText.length.minus(textPlusImgLen)
-                if (cutStart > 0) {
-                    mWholeText = mWholeText.substring(0, cutStart)
-                }
-                Logger("目标行切割后$mWholeText")
-            } else {
-                Logger("目标行满足当前字符需要宽度")
-                mWholeText = mWholeText.substring(0, layout.getLineEnd(targetLine))
+//            view的宽度相当于match_parent
+            var textLen = if (wholeLen > width) {//如果字符宽度大于屏幕宽度
+                endLineWidth.plus(width.minus(getWidth())).toInt()
+            } else {//
+                endLineWidth.plus(leftMargin).plus(rightMargin).toInt()
             }
+            Logger("当前行所占宽度 $endLineWidth 合计宽度 $textLen")
+            //如果当前行所剩宽度小于textLineWidth实际宽度 切割掉textPlusImgLen个字符(前提是实际行大于设置的最大行，否则直接拼接)
+            var textPlusImgLen = 0//追加的字符和图片的宽度
+            if (width.minus(textLen) < textLineWidth.plus(imgWidth) && lineGreaterMax) {
+                //追加文字和图片所占长度
+                textPlusImgLen = text.length.times(textTimes).plus(extraLength)
+            }
+            mWholeText = mWholeText.substring(0, layout.getLineEnd(targetLine) - textPlusImgLen)
             cutEnter()
+            Logger("目标行切割后 $mWholeText")
             mWholeText += text.plus(if (imgRes != -1) "  " else "")//如果末尾有图片的话，为图片预留一个空格占位
+            Logger("目标行拼接后 $mWholeText")
             getNewSpannableString()
-            Logger("目标行拼接后$mWholeText")
             if (imgRes != -1) {
                 setImage(imgRes)
             }
@@ -187,12 +201,14 @@ class SpecialTextView : AppCompatTextView {
 
     //    递归删除换行符
     private fun cutEnter() {
-        mWholeText.run {
-            var enter = substring(length - 1, length)
-            if (enter == "\n") {
-                Logger("包含回车，去除")
-                mWholeText = substring(0, length - 1)
-                cutEnter()
+        if (mWholeText.isNotEmpty()) {
+            mWholeText.run {
+                var enter = substring(length - 1, length)
+                if (enter == "\n") {
+                    Logger("包含回车，去除")
+                    mWholeText = substring(0, length - 1)
+                    cutEnter()
+                }
             }
         }
     }
@@ -343,8 +359,9 @@ class SpecialTextView : AppCompatTextView {
     }
 
     private var enabledLog = false
-    fun setEnabledLog(enabled: Boolean = false) {
+    fun setEnabledLog(enabled: Boolean = true): SpecialTextView {
         enabledLog = enabled
+        return this
     }
 
     private fun Logger(msg: String) {
