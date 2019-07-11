@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         setOneSpecialText()
         setManySpecialText()
         setEndText()
-//        special()
+        special()
     }
 
     //设置单个
