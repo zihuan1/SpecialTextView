@@ -78,22 +78,6 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     override fun specialClick(tag: String) {
         when (tag) {
             "more" -> {
-//                var line = tv_text3.maxLines
-//                if (line == 5) {
-//                    tv_text3.text = test
-//                    tv_text3.post {
-//                        line = tv_text3.lineCount
-//                        tv_text3.maxLines = line
-//                        tv_text3.setWhole(test)
-//                                .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
-//                    }
-//                } else {
-//                    line = 5
-//                    tv_text3.maxLines = line
-//                    tv_text3.setWhole(test)
-//                            .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
-//
-//                }
             }
         }
 

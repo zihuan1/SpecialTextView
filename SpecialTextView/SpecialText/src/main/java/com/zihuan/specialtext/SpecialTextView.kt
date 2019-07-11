@@ -7,6 +7,7 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v7.widget.AppCompatTextView
 import android.text.*
+import android.text.TextUtils.substring
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
@@ -170,11 +171,7 @@ class SpecialTextView : AppCompatTextView {
                 Logger("目标行满足当前字符需要宽度")
                 mWholeText = mWholeText.substring(0, layout.getLineEnd(targetLine))
             }
-            var jiance = mWholeText.substring(mWholeText.length - 2, mWholeText.length)
-            if (jiance == "\n\n") {
-                Logger("包含两个回车，去除一个")
-                mWholeText = mWholeText.substring(0, mWholeText.length - 1)
-            }
+            cutEnter()
             mWholeText += text.plus(if (imgRes != -1) "  " else "")//如果末尾有图片的话，为图片预留一个空格占位
             getNewSpannableString()
             Logger("目标行拼接后$mWholeText")
@@ -186,6 +183,18 @@ class SpecialTextView : AppCompatTextView {
             specialTextComplete()
         }
         return this
+    }
+
+    //    递归删除换行符
+    private fun cutEnter() {
+        mWholeText.run {
+            var enter = substring(length - 1, length)
+            if (enter == "\n") {
+                Logger("包含回车，去除")
+                mWholeText = substring(0, length - 1)
+                cutEnter()
+            }
+        }
     }
 
     /***
