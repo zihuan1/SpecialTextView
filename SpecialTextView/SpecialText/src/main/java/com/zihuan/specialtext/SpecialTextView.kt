@@ -233,6 +233,7 @@ class SpecialTextView : AppCompatTextView {
         }
 //        如果不想要居中对齐 可以用系统的ImageSpan 提供了两种对齐方式，ImageSpan.ALIGN_BASELINE、ALIGN_BOTTOM
         val imageSpan = SpecialImageSpan(context, res)
+        getSpannableString()
         mSpannableString?.setSpan(imageSpan, start, end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
         setSpecialClick(enabledClick, res.toString(), start, end)
         return this
