@@ -7,7 +7,6 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v7.widget.AppCompatTextView
 import android.text.*
-import android.text.TextUtils.substring
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
@@ -17,12 +16,11 @@ import android.view.View
 import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.LinearLayout
 
 
 class SpecialTextView : AppCompatTextView {
     private var TAG = "SpecialTextView"
-    private lateinit var mWholeText: String//完整字符串
+    private var mWholeText = ""//完整字符串
     private lateinit var mWholeTextCopy: String//完整字符串
     private var isNeedMovementMethod = false//是否需要设置分段点击的方法
     private var mSpannableString: SpannableStringBuilder? = null
@@ -36,6 +34,17 @@ class SpecialTextView : AppCompatTextView {
     private var mImageRes = 0
     private var mUnderline = false
     private var mExtraLength = 0
+    //判断当前是否是追加特殊字符
+    private var isEndText = false
+
+    //首次设置的行数
+    private val mEndTextLine by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            maxLines
+        } else {
+            1
+        }
+    }
 
     constructor(context: Context) : super(context) {
         initParams()
@@ -113,15 +122,6 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
-    //首次设置的行数
-    private val mEndTextLine by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            maxLines
-        } else {
-            1
-        }
-    }
-
 
     /****
      * 这个方法暂时不能和其他设置特殊字符串的方法一起使用，只能单独使用
@@ -142,7 +142,7 @@ class SpecialTextView : AppCompatTextView {
         var imgWidth = if (imgRes != -1) BitmapFactory.decodeResource(resources, imgRes).width else 0
         var targetLine: Int = maxLines - 1
         post {
-            var wholeLen = paint.measureText(mWholeText)
+            var wholeLen = paint.measureText(mWholeText.toString())
             Logger("设置的最大行数 $maxLines 实际行数 $lineCount 字符串实际宽度 $wholeLen")
             var lineGreaterMax = if (lineCount < maxLines) {//如果实际行数小于设置的最大行数，设置到实际的最后一行
                 Log.e(TAG, "实际行数小于设置的最大行数")
@@ -207,6 +207,7 @@ class SpecialTextView : AppCompatTextView {
                 if (enter == "\n") {
                     Logger("包含回车，去除")
                     mWholeText = substring(0, length - 1)
+//                    append(substring(0, length - 1))
                     cutEnter()
                 }
             }
@@ -257,9 +258,6 @@ class SpecialTextView : AppCompatTextView {
         }
     }
 
-    //判断当前是否是追加特殊字符
-    private var isEndText = false
-
     /***
      * 点击事件方法
      * @param enabledClick 是否开启点击事件
@@ -298,6 +296,41 @@ class SpecialTextView : AppCompatTextView {
                 mSpecialTextClick?.specialClick(special)
             }
         }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return this
+    }
+
+    private var conectionMode = false
+    //    连接模式
+    fun setConnectionMode(): SpecialTextView {
+        conectionMode = true
+        return this
+    }
+
+    /***
+     * 为指定的文字设置特殊的背景色
+     * 注意：如果设置的图片的高度大于文字的高度，背景的高度会以图片的高度为准
+     * 如有需要可以重写drawBackGround方法，手动计算 top和bottom
+     */
+    fun setSpecialBackGround(resId: Int, special: String, height: Int = 0): SpecialTextView {
+        var start = getSpecialIndexOf(special)
+        if (start < 0) return this
+        var end = start + special.length
+        setSpecialBackGround(resId,start,end,height)
+        return this
+    }
+
+    fun setSpecialBackGround(resId: Int, start: Int, end: Int, height: Int = 0): SpecialTextView {
+        if (start < 0) return this
+        var bg = BackGroundImageSpan(resId, resources.getDrawable(resId))
+        bg.setHeight(height)
+        getSpannableString().setSpan(bg, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return this
+    }
+
+    private var mTextEntity = ArrayList<TextEntity>()
+    fun specialConnectionAppend(special: String, color: Int, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
+        mWholeText += special
+        mTextEntity.add(TextEntity(special, color, enabledClick, underline))
         return this
     }
 
@@ -343,6 +376,11 @@ class SpecialTextView : AppCompatTextView {
 
     //设置字符串完成
     fun specialTextComplete() {
+        if (conectionMode) {
+            mTextEntity.forEach {
+                specialTextAppend(it.special, it.color, it.enabledClick, it.underline)
+            }
+        }
         if (isNeedMovementMethod) {
             isNeedMovementMethod = false
             movementMethod = LinkMovementMethod.getInstance()
@@ -351,8 +389,9 @@ class SpecialTextView : AppCompatTextView {
     }
 
 
-    private fun getSpannableString() {
+    private fun getSpannableString(): SpannableStringBuilder {
         if (mSpannableString == null) mSpannableString = SpannableStringBuilder(mWholeText)
+        return mSpannableString as SpannableStringBuilder
     }
 
     private fun getNewSpannableString() {
@@ -376,5 +415,19 @@ class SpecialTextView : AppCompatTextView {
      */
     interface SpecialTextClick {
         fun specialClick(tag: String)
+    }
+
+    class TextEntity {
+        constructor(special: String, color: Int, enabledClick: Boolean, underline: Boolean) {
+            this.special = special
+            this.color = color
+            this.enabledClick = enabledClick
+            this.underline = underline
+        }
+
+        var special = ""
+        var color = 0
+        var enabledClick = false
+        var underline = false
     }
 }

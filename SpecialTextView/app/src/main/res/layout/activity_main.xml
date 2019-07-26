@@ -12,11 +12,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <com.zihuan.specialtext.SpecialTextView
                 android:id="@+id/tv_text1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="20dp"
                 android:gravity="left"
                 android:maxLines="2" />
 
@@ -24,7 +25,7 @@
                 android:id="@+id/tv_text2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="20dp"
                 android:gravity="left"
                 android:maxLines="2" />
 
@@ -33,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="24dp"
                 android:maxLines="5"
                 android:textSize="16sp" />
@@ -42,9 +43,26 @@
                 android:id="@+id/tv_text4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="20dp"
                 android:gravity="left"
                 android:maxLines="2" />
+
+            <com.zihuan.specialtext.SpecialTextView
+                android:id="@+id/tv_text5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="left"
+                android:maxLines="2" />
+
+            <com.zihuan.specialtext.SpecialTextView
+                android:id="@+id/tv_text6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="left"
+                android:maxLines="2" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -12,9 +12,7 @@ import android.text.style.BackgroundColorSpan
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
-import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 
 import com.zihuan.specialtext.SpecialTextView
@@ -47,6 +45,14 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         setManySpecialText()
         setEndText()
         special()
+        connectionMode()
+        setSpecialBackGround()
+    }
+
+    //把dp转换成px
+    fun dip2px(dpValue: Float): Int {
+        val scale = resources.displayMetrics.density
+        return (dpValue * scale + 0.5f).toInt()
     }
 
     //设置单个
@@ -61,7 +67,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
                 .specialTextAppend(c, R.color.colorAccent, true)
                 .specialTextAppend(d, R.color.colorPrimaryDark, true)
                 .specialTextAppend(e, R.color.color_fe68, true)
-                .specialTextAppend(f, R.color.colorPrimary, true)
+                .specialTextAppend(f, R.color.colorPrimary, true)//设置一个不包含的字符
                 .setImage(R.mipmap.ic_launcher, enabledClick = true)
                 .specialTextComplete()
     }
@@ -69,6 +75,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
+//        并不是特别优雅
 //        缺少点击展开功能和动画
         tv_text3.setWhole(a)
                 .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
@@ -82,6 +89,29 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         }
 
         Toast.makeText(this, tag, Toast.LENGTH_SHORT).show()
+    }
+
+
+    fun connectionMode() {
+        tv_text4.setConnectionMode()
+                .specialConnectionAppend(b, R.color.colorPrimary)
+                .specialConnectionAppend(c, R.color.colorAccent, true)
+                .specialConnectionAppend(d, R.color.colorPrimaryDark, true)
+                .specialConnectionAppend(e, R.color.color_fe68, true)
+                .specialConnectionAppend("$f ", R.color.colorPrimary, true)
+                .setImage(R.mipmap.ic_launcher, enabledClick = true)
+                .specialTextComplete()
+    }
+
+    fun setSpecialBackGround() {
+        tv_text5.setConnectionMode()
+                .specialConnectionAppend(b, R.color.colorPrimary)
+                .specialConnectionAppend(c, R.color.colorAccent, true)
+                .specialConnectionAppend(d, R.color.colorPrimaryDark, true)
+                .specialConnectionAppend(e, R.color.color_fe68, true)
+                .specialConnectionAppend(a1, R.color.colorPrimary)
+                .setSpecialBackGround(R.drawable.bg_date_true, a1, dip2px(14f))
+                .specialTextComplete()
     }
 
     /***
@@ -107,7 +137,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         //文字背景颜色
         val bgColorSpan = BackgroundColorSpan(Color.parseColor("#009ad6"))
         spannableString.setSpan(bgColorSpan, 5, 9, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-        tv_text4.text = spannableString
-        tv_text4.movementMethod = LinkMovementMethod.getInstance()
+        tv_text6.text = spannableString
+        tv_text6.movementMethod = LinkMovementMethod.getInstance()
     }
 }
