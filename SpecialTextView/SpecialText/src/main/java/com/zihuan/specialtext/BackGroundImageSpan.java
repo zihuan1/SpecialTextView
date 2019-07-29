@@ -1,5 +1,6 @@
 package com.zihuan.specialtext;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -10,6 +11,8 @@ import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.style.ReplacementSpan;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
 public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSpan {
     private static final String TAG = "BackGroundImageSpan";
@@ -160,4 +163,7 @@ public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSp
         mWidth = (int) size;
         return mWidth;
     }
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.zihuan.specialtext
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -16,6 +17,7 @@ import android.view.View
 import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.WindowManager
+import kotlin.text.Typography.times
 
 
 class SpecialTextView : AppCompatTextView {
@@ -142,7 +144,7 @@ class SpecialTextView : AppCompatTextView {
         var imgWidth = if (imgRes != -1) BitmapFactory.decodeResource(resources, imgRes).width else 0
         var targetLine: Int = maxLines - 1
         post {
-            var wholeLen = paint.measureText(mWholeText.toString())
+            var wholeLen = paint.measureText(mWholeText)
             Logger("设置的最大行数 $maxLines 实际行数 $lineCount 字符串实际宽度 $wholeLen")
             var lineGreaterMax = if (lineCount < maxLines) {//如果实际行数小于设置的最大行数，设置到实际的最后一行
                 Log.e(TAG, "实际行数小于设置的最大行数")
@@ -315,7 +317,7 @@ class SpecialTextView : AppCompatTextView {
         var start = getSpecialIndexOf(special)
         if (start < 0) return this
         var end = start + special.length
-        setSpecialBackGround(resId,start,end,height)
+        setSpecialBackGround(resId, start, end, height)
         return this
     }
 
@@ -342,14 +344,27 @@ class SpecialTextView : AppCompatTextView {
                     text = mWholeTextCopy
                     post {
                         maxLines = lineCount
+//                        changeViewHeightAnimatorStart(height, maxLines.times(textSize).plus(maxLines.times(paddingTop)).toInt())
+                        Logger("height $height")
                         setEndText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+                        Logger("height $height")
                     }
                 } else {
                     maxLines = mEndTextLine
+                    Logger("height $height")
                     setEndText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+                    Logger("height $height")
+
                 }
             }
         }
+
+    }
+
+    //把dp转换成px
+    fun dip2px(dpValue: Float): Int {
+        val scale = resources.displayMetrics.density
+        return (dpValue * scale + 0.5f).toInt()
     }
 
     /***
@@ -429,5 +444,18 @@ class SpecialTextView : AppCompatTextView {
         var color = 0
         var enabledClick = false
         var underline = false
+    }
+
+    //伸缩动画
+    fun changeViewHeightAnimatorStart(startHeight: Int, endHeight: Int) {
+        if (startHeight >= 0 && endHeight >= 0) {
+            val animator = ValueAnimator.ofInt(startHeight, endHeight)
+            animator.addUpdateListener { animation ->
+                val params = layoutParams
+                params.height = animation.animatedValue as Int
+                layoutParams = params
+            }
+            animator.start()
+        }
     }
 }

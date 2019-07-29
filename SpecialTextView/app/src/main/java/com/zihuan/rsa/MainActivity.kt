@@ -1,5 +1,6 @@
 package com.zihuan.rsa
 
+import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 
 import com.zihuan.specialtext.SpecialTextView
@@ -49,12 +51,6 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         setSpecialBackGround()
     }
 
-    //把dp转换成px
-    fun dip2px(dpValue: Float): Int {
-        val scale = resources.displayMetrics.density
-        return (dpValue * scale + 0.5f).toInt()
-    }
-
     //设置单个
     private fun setOneSpecialText() {
         tv_text1.setSpecialText(a, b, R.color.colorPrimary)
@@ -76,8 +72,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
 //        并不是特别优雅
-//        缺少点击展开功能和动画
-        tv_text3.setWhole(a)
+        tv_text3.setWhole(test)
                 .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
 
@@ -110,7 +105,8 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
                 .specialConnectionAppend(d, R.color.colorPrimaryDark, true)
                 .specialConnectionAppend(e, R.color.color_fe68, true)
                 .specialConnectionAppend(a1, R.color.colorPrimary)
-                .setSpecialBackGround(R.drawable.bg_date_true, a1, dip2px(14f))
+                .setSpecialBackGround(R.drawable.bg_date_true, a1)
+//                .setSpecialBackGround(R.drawable.bg_date_true, a1, dip2px(14f))
                 .specialTextComplete()
     }
 
@@ -140,4 +136,5 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         tv_text6.text = spannableString
         tv_text6.movementMethod = LinkMovementMethod.getInstance()
     }
+
 }
