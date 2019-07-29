@@ -18,6 +18,8 @@ import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.WindowManager
 import kotlin.text.Typography.times
+import android.opengl.ETC1.getHeight
+import android.opengl.ETC1.getWidth
 
 
 class SpecialTextView : AppCompatTextView {
@@ -344,21 +346,18 @@ class SpecialTextView : AppCompatTextView {
                     text = mWholeTextCopy
                     post {
                         maxLines = lineCount
-//                        changeViewHeightAnimatorStart(height, maxLines.times(textSize).plus(maxLines.times(paddingTop)).toInt())
-                        Logger("height $height")
                         setEndText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
-                        Logger("height $height")
                     }
                 } else {
                     maxLines = mEndTextLine
-                    Logger("height $height")
                     setEndText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
-                    Logger("height $height")
-
                 }
+                if (mDisableAnim)
+                    post {
+                        changeViewHeightAnimatorStart(height, maxLines.times(textSize).plus(maxLines.times(12)).toInt())
+                    }
             }
         }
-
     }
 
     //把dp转换成px
@@ -384,6 +383,15 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
+    private var mDisableAnim = true
+    //    关闭伸缩动画
+    fun setDisableAnim() {
+        mDisableAnim = false
+    }
+
+    fun setEnableAnim() {
+        mDisableAnim = true
+    }
 
     private fun getSpecialIndexOf(special: String): Int {
         return if (mSpecialTextFirstIndex) mWholeText.indexOf(special) else mWholeText.lastIndexOf(special)
