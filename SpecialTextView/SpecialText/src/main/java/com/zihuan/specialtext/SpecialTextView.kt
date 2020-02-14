@@ -27,7 +27,7 @@ class SpecialTextView : AppCompatTextView {
     private var mWholeText = ""//完整字符串
     private lateinit var mWholeTextCopy: String//完整字符串
     private var isNeedMovementMethod = false//是否需要设置分段点击的方法
-    private var mSpannableString: SpannableStringBuilder? = null
+    private lateinit var mSpannableString: SpannableStringBuilder
     private var mSpecialTextClick: SpecialTextClick? = null
     private var mSpecialTextFirstIndex = false//默认取关键字最后出现的位置
     private var leftMargin = 0
@@ -412,9 +412,17 @@ class SpecialTextView : AppCompatTextView {
     }
 
 
+    /**
+     * 修复recycle中的复用问题
+     */
     private fun getSpannableString(): SpannableStringBuilder {
-        if (mSpannableString == null) mSpannableString = SpannableStringBuilder(mWholeText)
-        return mSpannableString as SpannableStringBuilder
+        if (mSpannableString == null)
+            mSpannableString = SpannableStringBuilder(mWholeText)
+        else {
+            mSpannableString?.clear()
+            mSpannableString?.append(mWholeText)
+        }
+        return mSpannableString!!
     }
 
     private fun getNewSpannableString() {
