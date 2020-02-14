@@ -5,21 +5,18 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
-import android.support.annotation.RequiresApi
-import android.support.v7.widget.AppCompatTextView
+import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.AppCompatTextView
 import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.WindowManager
-import kotlin.text.Typography.times
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
 
 
 class SpecialTextView : AppCompatTextView {
