@@ -24,7 +24,7 @@ class SpecialTextView : AppCompatTextView {
     private var mWholeText = ""//完整字符串
     private lateinit var mWholeTextCopy: String//完整字符串
     private var isNeedMovementMethod = false//是否需要设置分段点击的方法
-    private lateinit var mSpannableString: SpannableStringBuilder
+    private var mSpannableString: SpannableStringBuilder? = null
     private var mSpecialTextClick: SpecialTextClick? = null
     private var mSpecialTextFirstIndex = false//默认取关键字最后出现的位置
     private var leftMargin = 0
