@@ -1,11 +1,8 @@
 package com.zihuan.rsa
 
-import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
@@ -14,9 +11,10 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import com.zihuan.specialtext.BackGroundImageSpan
 import com.zihuan.specialtext.SpecialTextView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -26,7 +24,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     internal var a1 = "天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
     internal var b = "玄黄"
     internal var c = "洪荒"
-    internal var d = "盈昃"
+    internal var d = "      盈昃"
     internal var e = "列张"
     internal var f = "蛤蛤"
     var g = "更多"
@@ -51,19 +49,24 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         setSpecialBackGround()
     }
 
+    //做一个适配html的方法
+
     //设置单个
     private fun setOneSpecialText() {
         tv_text1.setSpecialText(a, b, R.color.colorPrimary)
+//        val html = "<html><font color=\"#666666\" size=\"10\">忘记密码?" +
+//                "</font><font color=\"#0000ff\">联系客服</font></html>"
+//        tv_text1.setText(Html.fromHtml(html))
     }
 
     //连续设置
     private fun setManySpecialText() {
         tv_text2.setWhole(a)
                 .specialTextAppend(b, R.color.colorPrimary)
-                .specialTextAppend(c, R.color.colorAccent, true)
-                .specialTextAppend(d, R.color.colorPrimaryDark, true)
-                .specialTextAppend(e, R.color.color_fe68, true)
-                .specialTextAppend(f, R.color.colorPrimary, true)//设置一个不包含的字符
+                .specialTextAppend(c, R.color.colorAccent)
+                .specialTextAppend(d, R.color.colorPrimaryDark, enabledClick = true)
+                .specialTextAppend(e, R.color.color_fe68, enabledClick = true)
+                .specialTextAppend(f, R.color.colorPrimary)//设置一个不包含的字符
                 .setImage(R.mipmap.ic_launcher, enabledClick = true)
                 .specialTextComplete()
     }
@@ -89,21 +92,22 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     fun connectionMode() {
         tv_text4.setConnectionMode()
-                .specialConnectionAppend(b, R.color.colorPrimary)
-                .specialConnectionAppend(c, R.color.colorAccent, true)
-                .specialConnectionAppend(d, R.color.colorPrimaryDark, true)
-                .specialConnectionAppend(e, R.color.color_fe68, true)
-                .specialConnectionAppend("$f ", R.color.colorPrimary, true)
-                .setImage(R.mipmap.ic_launcher, enabledClick = true)
+                .specialConnectionAppend("."+b, R.color.colorPrimary)
+                .specialConnectionAppend(c, R.color.colorAccent, enabledClick = true)
+                .specialConnectionAppend(d, R.color.colorAccent, 10, enabledClick = true)
+                .specialConnectionAppend(e, R.color.color_fe68, enabledClick = true)
+                .specialConnectionAppend("$f ", R.color.colorPrimary, 10, enabledClick = true)
+                .setImage(R.mipmap.ic_27,0,1)
+                .setSpecialBackGround(R.mipmap.ic_27, d, 44, 140)
                 .specialTextComplete()
     }
 
     fun setSpecialBackGround() {
         tv_text5.setConnectionMode()
                 .specialConnectionAppend(b, R.color.colorPrimary)
-                .specialConnectionAppend(c, R.color.colorAccent, true)
-                .specialConnectionAppend(d, R.color.colorPrimaryDark, true)
-                .specialConnectionAppend(e, R.color.color_fe68, true)
+                .specialConnectionAppend(c, R.color.colorAccent, enabledClick = true)
+                .specialConnectionAppend(d, R.color.colorPrimaryDark, enabledClick = true)
+                .specialConnectionAppend(e, R.color.color_fe68, enabledClick = true)
                 .specialConnectionAppend(a1, R.color.colorPrimary)
                 .setSpecialBackGround(R.drawable.bg_date_true, a1)
 //                .setSpecialBackGround(R.drawable.bg_date_true, a1, dip2px(14f))

@@ -17,6 +17,8 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
 
 
 class SpecialTextView : AppCompatTextView {
@@ -117,8 +119,8 @@ class SpecialTextView : AppCompatTextView {
      * @param underline 当前字段是否需要下划线 默认不需要
      * @return this
      */
-    fun specialTextAppend(special: String, color: Int, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
-        setSpecialText(special, color)
+    fun specialTextAppend(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
+        setSpecialText(special, color, textSize)
         setSpecialClick(enabledClick, special, underline = underline)
         return this
     }
@@ -235,23 +237,28 @@ class SpecialTextView : AppCompatTextView {
         }
 //        如果不想要居中对齐 可以用系统的ImageSpan 提供了两种对齐方式，ImageSpan.ALIGN_BASELINE、ALIGN_BOTTOM
         val imageSpan = SpecialImageSpan(context, res)
-        getSpannableString()
+        if (mSpannableString == null)
+            getSpannableString()
         mSpannableString?.setSpan(imageSpan, start, end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
         setSpecialClick(enabledClick, res.toString(), start, end)
         return this
     }
 
 
-    private fun setSpecialText(special: String, color: Int) {
+    private fun setSpecialText(special: String, color: Int, textSize: Int = 0) {
         if (TextUtils.isEmpty(mWholeText)) {//要设置最后出现的位置
             Log.e(TAG, "mWholeText为空>>>> 请先调用setWhole函数")
             return
         }
-        getSpannableString()
+        if (mSpannableString == null)
+            getSpannableString()
         val start = getSpecialIndexOf(special)
         val end = start + special.length
         try {
-            mSpannableString?.setSpan(ForegroundColorSpan(resources.getColor(color)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            mSpannableString?.setSpan(ForegroundColorSpan(resources.getColor(color)), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+            if (textSize != 0) {
+                mSpannableString?.setSpan(AbsoluteSizeSpan(textSize, true), start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+            }
         } catch (e: Exception) {
 //            post方法也许能解决
             Log.e(TAG, "没有发现当前字符>>>> " + special
@@ -312,26 +319,33 @@ class SpecialTextView : AppCompatTextView {
      * 注意：如果设置的图片的高度大于文字的高度，背景的高度会以图片的高度为准
      * 如有需要可以重写drawBackGround方法，手动计算 top和bottom
      */
-    fun setSpecialBackGround(resId: Int, special: String, height: Int = 0): SpecialTextView {
+    fun setSpecialBackGround(resId: Int, special: String, height: Int = 0, width: Int = 0): SpecialTextView {
         var start = getSpecialIndexOf(special)
         if (start < 0) return this
         var end = start + special.length
-        setSpecialBackGround(resId, start, end, height)
+        setSpecialBackGround(resId, start, end, height, width)
         return this
     }
 
-    fun setSpecialBackGround(resId: Int, start: Int, end: Int, height: Int = 0): SpecialTextView {
+    fun setSpecialBackGround(resId: Int, start: Int, end: Int, height: Int = 0, width: Int = 0): SpecialTextView {
         if (start < 0) return this
         var bg = BackGroundImageSpan(resId, resources.getDrawable(resId))
-        bg.setHeight(height)
-        getSpannableString().setSpan(bg, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if (height != 0) {
+            bg.setHeight(height)
+        }
+        if (width != 0) {
+            bg.setWidth(width)
+        }
+        if (mSpannableString == null)
+            getSpannableString()
+        mSpannableString?.setSpan(bg, start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
         return this
     }
 
     private var mTextEntity = ArrayList<TextEntity>()
-    fun specialConnectionAppend(special: String, color: Int, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
+    fun specialConnectionAppend(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
         mWholeText += special
-        mTextEntity.add(TextEntity(special, color, enabledClick, underline))
+        mTextEntity.add(TextEntity(special, color,textSize, enabledClick, underline))
         return this
     }
 
@@ -398,7 +412,7 @@ class SpecialTextView : AppCompatTextView {
     fun specialTextComplete() {
         if (conectionMode) {
             mTextEntity.forEach {
-                specialTextAppend(it.special, it.color, it.enabledClick, it.underline)
+                specialTextAppend(it.special, it.color, it.textSize,it.enabledClick, it.underline)
             }
         }
         if (isNeedMovementMethod) {
@@ -446,15 +460,17 @@ class SpecialTextView : AppCompatTextView {
     }
 
     class TextEntity {
-        constructor(special: String, color: Int, enabledClick: Boolean, underline: Boolean) {
+        constructor(special: String, color: Int, textSize: Int, enabledClick: Boolean, underline: Boolean) {
             this.special = special
             this.color = color
+            this.textSize = textSize
             this.enabledClick = enabledClick
             this.underline = underline
         }
 
         var special = ""
         var color = 0
+        var textSize = 0
         var enabledClick = false
         var underline = false
     }

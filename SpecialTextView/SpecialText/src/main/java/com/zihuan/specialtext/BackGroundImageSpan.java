@@ -1,6 +1,5 @@
 package com.zihuan.specialtext;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -11,8 +10,6 @@ import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.style.ReplacementSpan;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 
 public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSpan {
     private static final String TAG = "BackGroundImageSpan";
@@ -32,6 +29,12 @@ public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSp
     public BackGroundImageSpan(int id, Drawable drawable) {
         mImageId = id;
         mDrawable = drawable;
+//        int minimumHeight = mDrawable.getIntrinsicHeight();
+//        int minimumWidth = mDrawable.getIntrinsicWidth();
+//        if (minimumHeight != 0)
+//            setHeight(minimumHeight);
+//        if (minimumWidth != 0)
+//            setWidth(minimumWidth);
     }
 
     /**
@@ -66,6 +69,10 @@ public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSp
 
     public void setHeight(int pxHeight) {
         mHeight = pxHeight;
+    }
+
+    public void setWidth(int width) {
+        mWidth = width;
     }
 
     @Override
@@ -156,6 +163,7 @@ public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSp
      * @Override
      */
     public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+        if (mWidth > 0) return mWidth;
         float size = paint.measureText(text, start, end);
         if (fm != null && paint != null) {
             paint.getFontMetricsInt(fm);
@@ -163,7 +171,6 @@ public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSp
         mWidth = (int) size;
         return mWidth;
     }
-
 
 
 }
