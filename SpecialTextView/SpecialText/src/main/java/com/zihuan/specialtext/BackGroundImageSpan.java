@@ -151,7 +151,7 @@ public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSp
      * @Override
      */
     public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
-        drawBackGround(canvas, mWidth, x, top, y, bottom, paint);
+        drawBackGround(canvas, mWidth, x, top, y, bottom - 5, paint);
         canvas.drawText(text, start, end, x, y, paint);
     }
 
