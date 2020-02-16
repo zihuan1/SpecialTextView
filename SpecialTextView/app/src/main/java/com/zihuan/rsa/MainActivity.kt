@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         setSpecialBackGround()
     }
 
-    //做一个适配html的方法
+    //加一个设置
 
     //设置单个
     private fun setOneSpecialText() {

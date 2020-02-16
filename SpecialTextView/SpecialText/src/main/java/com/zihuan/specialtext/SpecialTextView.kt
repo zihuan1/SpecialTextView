@@ -26,7 +26,7 @@ class SpecialTextView : AppCompatTextView {
     private var mWholeText = ""//完整字符串
     private lateinit var mWholeTextCopy: String//完整字符串
     private var isNeedMovementMethod = false//是否需要设置分段点击的方法
-    private var mSpannableString: SpannableStringBuilder? = null
+    var mSpannableString: SpannableStringBuilder? = null
     private var mSpecialTextClick: SpecialTextClick? = null
     private var mSpecialTextFirstIndex = false//默认取关键字最后出现的位置
     private var leftMargin = 0
@@ -40,6 +40,8 @@ class SpecialTextView : AppCompatTextView {
     //判断当前是否是追加特殊字符
     private var isEndText = false
 
+    //是否是Recycler模式
+    var isRecyclerMode = false
     //首次设置的行数
     private val mEndTextLine by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -345,7 +347,7 @@ class SpecialTextView : AppCompatTextView {
     private var mTextEntity = ArrayList<TextEntity>()
     fun specialConnectionAppend(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
         mWholeText += special
-        mTextEntity.add(TextEntity(special, color,textSize, enabledClick, underline))
+        mTextEntity.add(TextEntity(special, color, textSize, enabledClick, underline))
         return this
     }
 
@@ -412,7 +414,7 @@ class SpecialTextView : AppCompatTextView {
     fun specialTextComplete() {
         if (conectionMode) {
             mTextEntity.forEach {
-                specialTextAppend(it.special, it.color, it.textSize,it.enabledClick, it.underline)
+                specialTextAppend(it.special, it.color, it.textSize, it.enabledClick, it.underline)
             }
         }
         if (isNeedMovementMethod) {
@@ -487,4 +489,5 @@ class SpecialTextView : AppCompatTextView {
             animator.start()
         }
     }
+
 }
