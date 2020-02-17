@@ -2,12 +2,14 @@ package com.zihuan.specialtext;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.text.ParcelableSpan;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
 import android.util.Log;
 
@@ -73,6 +75,12 @@ public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSp
 
     public void setWidth(int width) {
         mWidth = width;
+    }
+
+    private int textColor = 0;
+
+    public void setColor(int color) {
+        textColor = color;
     }
 
     @Override
@@ -152,6 +160,10 @@ public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSp
      */
     public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
         drawBackGround(canvas, mWidth, x, top, y, bottom - 5, paint);
+        if (textColor != 0) {
+            paint.setColor(textColor);
+//            paint.setColor(Color.parseColor(textColor));
+        }
         canvas.drawText(text, start, end, x, y, paint);
     }
 

@@ -321,15 +321,15 @@ class SpecialTextView : AppCompatTextView {
      * 注意：如果设置的图片的高度大于文字的高度，背景的高度会以图片的高度为准
      * 如有需要可以重写drawBackGround方法，手动计算 top和bottom
      */
-    fun setSpecialBackGround(resId: Int, special: String, height: Int = 0, width: Int = 0): SpecialTextView {
+    fun setSpecialBackGround(resId: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): SpecialTextView {
         var start = getSpecialIndexOf(special)
         if (start < 0) return this
         var end = start + special.length
-        setSpecialBackGround(resId, start, end, height, width)
+        setSpecialBackGround(resId, start, end, height, width, textColor)
         return this
     }
 
-    fun setSpecialBackGround(resId: Int, start: Int, end: Int, height: Int = 0, width: Int = 0): SpecialTextView {
+    fun setSpecialBackGround(resId: Int, start: Int, end: Int, height: Int = 0, width: Int = 0, textColor: Int): SpecialTextView {
         if (start < 0) return this
         var bg = BackGroundImageSpan(resId, resources.getDrawable(resId))
         if (height != 0) {
@@ -337,6 +337,9 @@ class SpecialTextView : AppCompatTextView {
         }
         if (width != 0) {
             bg.setWidth(width)
+        }
+        if (textColor != 0) {
+            bg.setColor(resources.getColor(textColor))
         }
         if (mSpannableString == null)
             getSpannableString()

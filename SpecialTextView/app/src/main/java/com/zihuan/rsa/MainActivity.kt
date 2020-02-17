@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
                 .specialConnectionAppend(e, R.color.color_fe68, enabledClick = true)
                 .specialConnectionAppend("$f ", R.color.colorPrimary, 10, enabledClick = true)
                 .setImage(R.mipmap.ic_27,0,1)
-                .setSpecialBackGround(R.mipmap.ic_27, d, 44, 140)
+                .setSpecialBackGround(R.mipmap.ic_27, d, 44, 140,R.color.color_fe68)
                 .specialTextComplete()
     }
 
