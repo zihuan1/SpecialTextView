@@ -20,7 +20,8 @@ Step 1
 Step 2
 
 	dependencies {
-	        implementation 'com.github.zihuan1:SpecialTextView:latest.integration'
+			implementation 'com.github.zihuan1:view-specialtextview:1.32'
+
 	}
 ## 参考资料
 [SpannableStringBiulderTest](https://github.com/Gavin-ZYX/SpannableStringBiulderTest)
