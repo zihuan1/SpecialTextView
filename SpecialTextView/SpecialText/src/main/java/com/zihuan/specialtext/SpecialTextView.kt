@@ -37,11 +37,13 @@ class SpecialTextView : AppCompatTextView {
     private var mImageRes = 0
     private var mUnderline = false
     private var mExtraLength = 0
+
     //判断当前是否是追加特殊字符
     private var isEndText = false
 
     //是否是Recycler模式
     var isRecyclerMode = false
+
     //首次设置的行数
     private val mEndTextLine by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -310,6 +312,7 @@ class SpecialTextView : AppCompatTextView {
     }
 
     private var conectionMode = false
+
     //    连接模式
     fun setConnectionMode(): SpecialTextView {
         conectionMode = true
@@ -400,6 +403,7 @@ class SpecialTextView : AppCompatTextView {
     }
 
     private var mDisableAnim = true
+
     //    关闭伸缩动画
     fun setDisableAnim() {
         mDisableAnim = false
@@ -424,6 +428,8 @@ class SpecialTextView : AppCompatTextView {
             isNeedMovementMethod = false
             movementMethod = LinkMovementMethod.getInstance()
         }
+        if (null == mSpannableString)
+            getSpannableString()
         text = mSpannableString
     }
 
