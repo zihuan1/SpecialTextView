@@ -26,7 +26,7 @@ class SpecialTextView : AppCompatTextView {
     private var mWholeText = ""//完整字符串
     private lateinit var mWholeTextCopy: String//完整字符串
     private var isNeedMovementMethod = false//是否需要设置分段点击的方法
-    var mSpannableString: SpannableStringBuilder? = null
+    private var mSpannableString: SpannableStringBuilder? = null
     private var mSpecialTextClick: SpecialTextClick? = null
     private var mSpecialTextFirstIndex = false//默认取关键字最后出现的位置
     private var leftMargin = 0
@@ -40,9 +40,6 @@ class SpecialTextView : AppCompatTextView {
 
     //判断当前是否是追加特殊字符
     private var isEndText = false
-
-    //是否是Recycler模式
-    var isRecyclerMode = false
 
     //首次设置的行数
     private val mEndTextLine by lazy {
@@ -129,6 +126,19 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
+    /***
+     * 连续设置多个特殊字符串
+     * @param special 特殊的字符
+     * @param color 特殊字符的色值
+     * @param enabledClick 是否设置点击事件
+     * @param underline 当前字段是否需要下划线 默认不需要
+     * @return this
+     */
+    fun specialTextAppend(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false, startIndex: Int = -1): SpecialTextView {
+        setSpecialText(special, color, textSize, startIndex)
+        setSpecialClick(enabledClick, special, start = startIndex, underline = underline)
+        return this
+    }
 
     /****
      * 这个方法暂时不能和其他设置特殊字符串的方法一起使用，只能单独使用
@@ -249,14 +259,14 @@ class SpecialTextView : AppCompatTextView {
     }
 
 
-    private fun setSpecialText(special: String, color: Int, textSize: Int = 0) {
+    private fun setSpecialText(special: String, color: Int, textSize: Int = 0, startInt: Int = -1) {
         if (TextUtils.isEmpty(mWholeText)) {//要设置最后出现的位置
             Log.e(TAG, "mWholeText为空>>>> 请先调用setWhole函数")
             return
         }
         if (mSpannableString == null)
             getSpannableString()
-        val start = getSpecialIndexOf(special)
+        val start = if (startInt == -1) getSpecialIndexOf(special) else startInt
         val end = start + special.length
         try {
             mSpannableString?.setSpan(ForegroundColorSpan(resources.getColor(color)), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
@@ -264,9 +274,8 @@ class SpecialTextView : AppCompatTextView {
                 mSpannableString?.setSpan(AbsoluteSizeSpan(textSize, true), start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
             }
         } catch (e: Exception) {
-//            post方法也许能解决
-            Log.e(TAG, "没有发现当前字符>>>> " + special
-                    + "\n暂时不能用于RecycleView等列表中(或者自己手动处理下,滚动到当前view时重新设置setSpecialText()) Exception>>>> " + e.toString())
+//            Log.e(TAG, "没有发现当前字符>>>> " + special
+//                    + "\n暂时不能用于RecycleView等列表中(或者自己手动处理下,滚动到当前view时重新设置setSpecialText()) Exception>>>> " + e.toString())
         }
     }
 
@@ -278,7 +287,7 @@ class SpecialTextView : AppCompatTextView {
      * @param end 点击事件结束的位置
      * @param underline 是否需要下划线
      */
-    fun setSpecialClick(enabledClick: Boolean = false, special: String, start: Int = -1, end: Int = -1, underline: Boolean = false): SpecialTextView {
+    private fun setSpecialClick(enabledClick: Boolean = false, special: String, start: Int = -1, end: Int = -1, underline: Boolean = false): SpecialTextView {
         if (!enabledClick) return this
         isNeedMovementMethod = true
         if (mSpecialTextClick == null) {
@@ -311,11 +320,11 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
-    private var conectionMode = false
+    private var connectionMode = false
 
     //    连接模式
     fun setConnectionMode(): SpecialTextView {
-        conectionMode = true
+        connectionMode = true
         return this
     }
 
@@ -332,7 +341,7 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
-    fun setSpecialBackGround(resId: Int, start: Int, end: Int, height: Int = 0, width: Int = 0, textColor: Int): SpecialTextView {
+    private fun setSpecialBackGround(resId: Int, start: Int, end: Int, height: Int = 0, width: Int = 0, textColor: Int): SpecialTextView {
         if (start < 0) return this
         var bg = BackGroundImageSpan(resId, resources.getDrawable(resId))
         if (height != 0) {
@@ -419,7 +428,7 @@ class SpecialTextView : AppCompatTextView {
 
     //设置字符串完成
     fun specialTextComplete() {
-        if (conectionMode) {
+        if (connectionMode) {
             mTextEntity.forEach {
                 specialTextAppend(it.special, it.color, it.textSize, it.enabledClick, it.underline)
             }
