@@ -325,6 +325,9 @@ class SpecialTextView : AppCompatTextView {
     //    连接模式
     fun setConnectionMode(): SpecialTextView {
         connectionMode = true
+        mSpannableString = null
+        mWholeText = ""
+        mTextEntity.clear()
         return this
     }
 
