@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     /***
      *使用示例
      */
-    fun special() {
+    private fun special() {
         val spannableString = SpannableStringBuilder()
         spannableString.append(a)
         spannableString.append(a1)
