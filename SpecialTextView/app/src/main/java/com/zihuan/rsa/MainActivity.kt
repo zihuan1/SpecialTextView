@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
 
     private fun funConnectionMode() {
-        tv_text4.setConnectionMode()
+        tv_text4.setAppendMode()
                 .append(b, R.color.colorPrimary)
                 .append(c, R.color.colorAccent, enabledClick = true)
                 .append(d, R.color.colorAccent, 10, enabledClick = true)
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     }
 
     private fun funSpecialBackGround() {
-        tv_text5.setConnectionMode()
+        tv_text5.setAppendMode()
                 .append(b, R.color.colorPrimary)
                 .append(c, R.color.colorAccent, enabledClick = true)
                 .append(d, R.color.colorPrimaryDark, enabledClick = true)

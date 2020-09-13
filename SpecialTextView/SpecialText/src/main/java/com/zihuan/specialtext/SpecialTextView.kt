@@ -318,10 +318,10 @@ class SpecialTextView : AppCompatTextView {
     private var connectionMode = false
 
     /**
+     * 设置为追加模式
      * 将多个单独的特殊字符拼接起来,注意不要和 setCompleteText 模式混用
-     *
      */
-    fun setConnectionMode(): SpecialTextView {
+    fun setAppendMode(): SpecialTextView {
         connectionMode = true
         mSpannableString = null
         mWholeText = ""
