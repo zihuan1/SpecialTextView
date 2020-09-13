@@ -49,7 +49,6 @@ class SpecialTextView : AppCompatTextView {
             1
         }
     }
-
     constructor(context: Context) : super(context) {
         initParams()
     }
@@ -76,11 +75,14 @@ class SpecialTextView : AppCompatTextView {
     }
 
     /***
+     * 连续设置特殊字符模式
      * 设置完整的字符
+     * 当一段文字中有多个特殊字符串的时候,先调用这个方法,再调用specialTextAppend
+     * @sample append
      * @param wholeString
      * @return
      */
-    fun setWhole(wholeString: String): SpecialTextView {
+    fun setTotalText(wholeString: String): SpecialTextView {
         mWholeText = wholeString
         mWholeTextCopy = wholeString
         return this
@@ -106,10 +108,10 @@ class SpecialTextView : AppCompatTextView {
      * @param underline 当前字段是否需要下划线 默认不需要
      */
     fun setSpecialText(wholeString: String, special: String, color: Int, enabledClick: Boolean = false, underline: Boolean = false) {
-        setWhole(wholeString)
-        setSpecialText(special, color)
+        setTotalText(wholeString)
+        setSpecial(special, color)
         setSpecialClick(enabledClick, special, underline = underline)
-        specialTextComplete()
+        complete()
     }
 
     /***
@@ -120,23 +122,12 @@ class SpecialTextView : AppCompatTextView {
      * @param underline 当前字段是否需要下划线 默认不需要
      * @return this
      */
-    fun specialTextAppend(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
-        setSpecialText(special, color, textSize)
+    fun append(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
+        if (connectionMode) {
+            mWholeText += special
+        }
+        setSpecial(special, color, textSize)
         setSpecialClick(enabledClick, special, underline = underline)
-        return this
-    }
-
-    /***
-     * 连续设置多个特殊字符串
-     * @param special 特殊的字符
-     * @param color 特殊字符的色值
-     * @param enabledClick 是否设置点击事件
-     * @param underline 当前字段是否需要下划线 默认不需要
-     * @return this
-     */
-    fun specialTextAppend(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false, startIndex: Int = -1): SpecialTextView {
-        setSpecialText(special, color, textSize, startIndex)
-        setSpecialClick(enabledClick, special, start = startIndex, underline = underline)
         return this
     }
 
@@ -207,11 +198,11 @@ class SpecialTextView : AppCompatTextView {
             Logger("目标行拼接后 $mWholeText")
             getNewSpannableString()
             if (imgRes != -1) {
-                setImage(imgRes)
+                addImage(imgRes)
             }
-            setSpecialText(text, color)
+            setSpecial(text, color)
             setSpecialClick(enabledClick, text, end = mWholeText.length, underline = underline)
-            specialTextComplete()
+            complete()
         }
         return this
     }
@@ -242,7 +233,7 @@ class SpecialTextView : AppCompatTextView {
      * @param enabledClick 是否设置点击事件
      * 点击后返回 图片的资源id 以此判断点击的位置
      */
-    fun setImage(res: Int, start: Int = -1, end: Int = -1, enabledClick: Boolean = false): SpecialTextView {
+    fun addImage(res: Int, start: Int = -1, end: Int = -1, enabledClick: Boolean = false): SpecialTextView {
         var start = start
         var end = end
         if (start == -1) {
@@ -259,13 +250,17 @@ class SpecialTextView : AppCompatTextView {
     }
 
 
-    private fun setSpecialText(special: String, color: Int, textSize: Int = 0, startInt: Int = -1) {
+    private fun setSpecial(special: String, color: Int, textSize: Int = 0, startInt: Int = -1) {
         if (TextUtils.isEmpty(mWholeText)) {//要设置最后出现的位置
-            Log.e(TAG, "mWholeText为空>>>> 请先调用setWhole函数")
+            Log.e(TAG, "mWholeText为空>>>> 请先调用setTotalText函数")
             return
+        }
+        if (connectionMode) {
+            mSpannableString?.append(special)
         }
         if (mSpannableString == null)
             getSpannableString()
+
         val start = if (startInt == -1) getSpecialIndexOf(special) else startInt
         val end = start + special.length
         try {
@@ -322,12 +317,14 @@ class SpecialTextView : AppCompatTextView {
 
     private var connectionMode = false
 
-    //    连接模式
+    /**
+     * 将多个单独的特殊字符拼接起来,注意不要和 setCompleteText 模式混用
+     *
+     */
     fun setConnectionMode(): SpecialTextView {
         connectionMode = true
         mSpannableString = null
         mWholeText = ""
-        mTextEntity.clear()
         return this
     }
 
@@ -336,15 +333,10 @@ class SpecialTextView : AppCompatTextView {
      * 注意：如果设置的图片的高度大于文字的高度，背景的高度会以图片的高度为准
      * 如有需要可以重写drawBackGround方法，手动计算 top和bottom
      */
-    fun setSpecialBackGround(resId: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): SpecialTextView {
+    fun addBackGround(resId: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): SpecialTextView {
         var start = getSpecialIndexOf(special)
         if (start < 0) return this
         var end = start + special.length
-        setSpecialBackGround(resId, start, end, height, width, textColor)
-        return this
-    }
-
-    private fun setSpecialBackGround(resId: Int, start: Int, end: Int, height: Int = 0, width: Int = 0, textColor: Int): SpecialTextView {
         if (start < 0) return this
         var bg = BackGroundImageSpan(resId, resources.getDrawable(resId))
         if (height != 0) {
@@ -362,17 +354,11 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
-    private var mTextEntity = ArrayList<TextEntity>()
-    fun specialConnectionAppend(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
-        mWholeText += special
-        mTextEntity.add(TextEntity(special, color, textSize, enabledClick, underline))
-        return this
-    }
 
     private fun resetEndText() {
         if (isEndText) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                setWhole(mWholeTextCopy)
+                setTotalText(mWholeTextCopy)
                 if (maxLines == mEndTextLine) {
                     text = mWholeTextCopy
                     post {
@@ -389,12 +375,6 @@ class SpecialTextView : AppCompatTextView {
                     }
             }
         }
-    }
-
-    //把dp转换成px
-    fun dip2px(dpValue: Float): Int {
-        val scale = resources.displayMetrics.density
-        return (dpValue * scale + 0.5f).toInt()
     }
 
     /***
@@ -430,12 +410,12 @@ class SpecialTextView : AppCompatTextView {
     }
 
     //设置字符串完成
-    fun specialTextComplete() {
-        if (connectionMode) {
-            mTextEntity.forEach {
-                specialTextAppend(it.special, it.color, it.textSize, it.enabledClick, it.underline)
-            }
-        }
+    fun complete() {
+//        if (connectionMode) {
+//            mTextEntity.forEach {
+//                specialTextAppend(it.special, it.color, it.textSize, it.enabledClick, it.underline)
+//            }
+//        }
         if (isNeedMovementMethod) {
             isNeedMovementMethod = false
             movementMethod = LinkMovementMethod.getInstance()
@@ -449,14 +429,13 @@ class SpecialTextView : AppCompatTextView {
     /**
      * 修复recycle中的复用问题
      */
-    private fun getSpannableString(): SpannableStringBuilder {
+    private fun getSpannableString() {
         if (mSpannableString == null)
             mSpannableString = SpannableStringBuilder(mWholeText)
         else {
             mSpannableString?.clear()
             mSpannableString?.append(mWholeText)
         }
-        return mSpannableString!!
     }
 
     private fun getNewSpannableString() {

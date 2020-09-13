@@ -14,19 +14,18 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.zihuan.specialtext.BackGroundImageSpan
 import com.zihuan.specialtext.SpecialTextView
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
-    internal var a = "天地玄黄，宇宙洪荒,日月盈昃，辰宿列张。"
-    internal var a1 = "天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
-    internal var b = "玄黄"
-    internal var c = "洪荒"
-    internal var d = "      盈昃"
-    internal var e = "列张"
-    internal var f = "蛤蛤"
+    private var a = "天地玄黄，宇宙洪荒,日月盈昃，辰宿列张。"
+    private var a1 = "天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
+    private var b = "玄黄"
+    private var c = "洪荒"
+    private var d = "      盈昃"
+    private var e = "列张"
+    private var f = "蛤蛤"
     var g = "更多"
     var test = "\"Clearly you can bow your head, why should I cry?\"\n" +
             "\n" +
@@ -36,6 +35,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
             "\n" +
             "After six months of careful polishing, the gyroscopic History Museum has returned and opened the 100-city tour exhibition. This time, we will bring the \"gyroscopic history museum\" to more cities."
     var test2 = "\"阿黛侬国家美术馆由建筑大师Theodor Höijer(1843–1910)设计，该建筑在1887年春天竣工，并于1887年11月18日正式揭牌投入使用。阿黛侬是赫尔辛基最受欢迎的博物馆之一，它和另两个艺术馆一起组成了芬兰国家艺术画廊。该博物馆坐落于中央火车站广场南侧。博物馆收藏了从18世纪以来的各种芬兰艺术品，其中包含650件国际艺术品，其中之一便是著名的梵高1890年作品《瓦兹河畔欧韦的街道》。除此之外许多艺术家的作品都在该博物馆中展出，该建筑由政府房地产提供商Senate Properties拥有。\\\""
+
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +45,8 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         setManySpecialText()
         setEndText()
         special()
-        connectionMode()
-        setSpecialBackGround()
+        funConnectionMode()
+        funSpecialBackGround()
     }
 
     //加一个设置
@@ -61,21 +61,20 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     //连续设置
     private fun setManySpecialText() {
-        tv_text2.setWhole(a)
-                .specialTextAppend(b, R.color.colorPrimary)
-                .specialTextAppend(c, R.color.colorAccent)
-                .specialTextAppend(d, R.color.colorPrimaryDark, enabledClick = true)
-                .specialTextAppend(e, R.color.color_fe68, enabledClick = true)
-                .specialTextAppend(f, R.color.colorPrimary)//设置一个不包含的字符
-                .setImage(R.mipmap.ic_launcher, enabledClick = true)
-                .specialTextComplete()
+        tv_text2.setTotalText(a)
+                .append(b, R.color.colorPrimary)
+                .append(c, R.color.colorAccent)
+                .append(d, R.color.colorPrimaryDark, enabledClick = true)
+                .append(e, R.color.color_fe68, enabledClick = true)
+                .append(f, R.color.colorPrimary)//设置一个不包含的字符
+                .addImage(R.mipmap.ic_launcher, enabledClick = true)
+                .complete()
     }
 
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
-//        并不是特别优雅
-        tv_text3.setWhole(test)
+        tv_text3.setTotalText(test)
                 .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
 
@@ -90,28 +89,27 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     }
 
 
-    fun connectionMode() {
+    private fun funConnectionMode() {
         tv_text4.setConnectionMode()
-                .specialConnectionAppend("."+b, R.color.colorPrimary)
-                .specialConnectionAppend(c, R.color.colorAccent, enabledClick = true)
-                .specialConnectionAppend(d, R.color.colorAccent, 10, enabledClick = true)
-                .specialConnectionAppend(e, R.color.color_fe68, enabledClick = true)
-                .specialConnectionAppend("$f ", R.color.colorPrimary, 10, enabledClick = true)
-                .setImage(R.mipmap.ic_27,0,1)
-                .setSpecialBackGround(R.mipmap.ic_27, d, 44, 140,R.color.color_fe68)
-                .specialTextComplete()
+                .append(b, R.color.colorPrimary)
+                .append(c, R.color.colorAccent, enabledClick = true)
+                .append(d, R.color.colorAccent, 10, enabledClick = true)
+                .append(e, R.color.color_fe68, enabledClick = true)
+                .append("$f ", R.color.colorPrimary, 10, enabledClick = true)
+                .addImage(R.mipmap.ic_27, 0, 1)
+                .addBackGround(R.mipmap.ic_27, d, 44, 140, R.color.color_fe68)
+                .complete()
     }
 
-    fun setSpecialBackGround() {
+    private fun funSpecialBackGround() {
         tv_text5.setConnectionMode()
-                .specialConnectionAppend(b, R.color.colorPrimary)
-                .specialConnectionAppend(c, R.color.colorAccent, enabledClick = true)
-                .specialConnectionAppend(d, R.color.colorPrimaryDark, enabledClick = true)
-                .specialConnectionAppend(e, R.color.color_fe68, enabledClick = true)
-                .specialConnectionAppend(a1, R.color.colorPrimary)
-                .setSpecialBackGround(R.drawable.bg_date_true, a1)
-//                .setSpecialBackGround(R.drawable.bg_date_true, a1, dip2px(14f))
-                .specialTextComplete()
+                .append(b, R.color.colorPrimary)
+                .append(c, R.color.colorAccent, enabledClick = true)
+                .append(d, R.color.colorPrimaryDark, enabledClick = true)
+                .append(e, R.color.color_fe68, enabledClick = true)
+                .append(a1, R.color.colorPrimary)
+                .addBackGround(R.drawable.bg_date_true, a1)
+                .complete()
     }
 
     /***

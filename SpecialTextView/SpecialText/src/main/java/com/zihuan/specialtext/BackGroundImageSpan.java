@@ -13,7 +13,8 @@ import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
 import android.util.Log;
 
-public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSpan {
+public class BackGroundImageSpan extends ReplacementSpan  {
+//public class BackGroundImageSpan extends ReplacementSpan implements ParcelableSpan {
     private static final String TAG = "BackGroundImageSpan";
     private Drawable mDrawable;
     private int mImageId;
