@@ -19,12 +19,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
-    private var a = "天地玄黄，宇宙洪荒,日月盈昃，辰宿列张。"
+    private var a = "天地玄黄,宇宙洪荒,日月盈昃,辰宿列张."
     private var a1 = "天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
-    private var b = "玄黄"
-    private var c = "洪荒"
-    private var d = "      盈昃"
-    private var e = "列张"
+    private var xh = "玄黄"
+    private var hl = "洪荒"
+    private var yz = "      盈昃"
+    private var lz = "列张"
     private var f = "蛤蛤"
     var g = "更多"
     var test = "\"Clearly you can bow your head, why should I cry?\"\n" +
@@ -41,19 +41,19 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         tv_text3.setEnabledLog(true)
-        setOneSpecialText()
+//        setOneSpecialText()
         setManySpecialText()
-        setEndText()
-        special()
-        funConnectionMode()
-        funSpecialBackGround()
+//        setEndText()
+//        special()
+//        funConnectionMode()
+//        funSpecialBackGround()
     }
 
     //加一个设置
 
     //设置单个
     private fun setOneSpecialText() {
-        tv_text1.setSpecialText(a, b, R.color.colorPrimary)
+        tv_text1.setSingleText(a, xh, R.color.colorPrimary)
 //        val html = "<html><font color=\"#666666\" size=\"10\">忘记密码?" +
 //                "</font><font color=\"#0000ff\">联系客服</font></html>"
 //        tv_text1.setText(Html.fromHtml(html))
@@ -61,20 +61,21 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     //连续设置
     private fun setManySpecialText() {
-        tv_text2.setTotalText(a)
-                .append(b, R.color.colorPrimary)
-                .append(c, R.color.colorAccent)
-                .append(d, R.color.colorPrimaryDark, enabledClick = true)
-                .append(e, R.color.color_fe68, enabledClick = true)
-                .append(f, R.color.colorPrimary)//设置一个不包含的字符
+        tv_text2.setMultipleText(a)
+                .append(xh, R.color.colorPrimary)
+                .append(hl, R.color.colorAccent)
+                .addImage(R.mipmap.ic_launcher, 7,8,enabledClick = true)
+                .append(yz, R.color.colorPrimaryDark, enabledClick = true)
+                .append(lz, R.color.color_fe68, enabledClick = true)
                 .addImage(R.mipmap.ic_launcher, enabledClick = true)
+                .append(f, R.color.colorPrimary)//设置一个不包含的字符 测试
                 .complete()
     }
 
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
-        tv_text3.setTotalText(test)
+        tv_text3.setMultipleText(test)
                 .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
 
@@ -90,30 +91,31 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
 
     private fun funConnectionMode() {
-        tv_text4.setAppendMode()
-                .append(b, R.color.colorPrimary)
-                .append(c, R.color.colorAccent, enabledClick = true)
-                .append(d, R.color.colorAccent, 10, enabledClick = true)
-                .append(e, R.color.color_fe68, enabledClick = true)
+        tv_text4.setMultipleText()
+                .append(" $xh", R.color.colorPrimary)
+                .append(hl, R.color.colorAccent, enabledClick = true)
+                .append(yz, R.color.colorAccent, 10, enabledClick = true)
+                .append(lz, R.color.color_fe68, enabledClick = true)
+//                .addImage(R.mipmap.ic_bottom_arrow)
                 .append("$f ", R.color.colorPrimary, 10, enabledClick = true)
                 .addImage(R.mipmap.ic_27, 0, 1)
-                .addBackGround(R.mipmap.ic_27, d, 44, 140, R.color.color_fe68)
+                .addBackGround(R.mipmap.ic_27, yz, 44, 140, R.color.color_fe68)
                 .complete()
     }
 
     private fun funSpecialBackGround() {
-        tv_text5.setAppendMode()
-                .append(b, R.color.colorPrimary)
-                .append(c, R.color.colorAccent, enabledClick = true)
-                .append(d, R.color.colorPrimaryDark, enabledClick = true)
-                .append(e, R.color.color_fe68, enabledClick = true)
+        tv_text5.setMultipleText()
+                .append(xh, R.color.colorPrimary)
+                .append(hl, R.color.colorAccent, enabledClick = true)
+                .append(yz, R.color.colorPrimaryDark, enabledClick = true)
+                .append(lz, R.color.color_fe68, enabledClick = true)
                 .append(a1, R.color.colorPrimary)
-                .addBackGround(R.drawable.bg_date_true, a1)
+                .addBackGround(R.drawable.bg_date_true, lz)
                 .complete()
     }
 
     /***
-     *使用示例
+     * 原生使用示例
      */
     private fun special() {
         val spannableString = SpannableStringBuilder()
@@ -135,6 +137,12 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         //文字背景颜色
         val bgColorSpan = BackgroundColorSpan(Color.parseColor("#009ad6"))
         spannableString.setSpan(bgColorSpan, 5, 9, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+
+        val colorSpan1 = ForegroundColorSpan(Color.parseColor("#FFFFFF"))
+        spannableString.setSpan(colorSpan1, 31, 33, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+        //文字背景颜色
+        val bgColorSpan1 = BackgroundColorSpan(Color.parseColor("#009ad6"))
+        spannableString.setSpan(bgColorSpan1, 31, 33, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
         tv_text6.text = spannableString
         tv_text6.movementMethod = LinkMovementMethod.getInstance()
     }
