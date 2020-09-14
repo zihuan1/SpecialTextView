@@ -56,6 +56,9 @@ class SpecialTextView : AppCompatTextView {
     //是否启用伸缩动画
     internal var mDisableAnim = true
 
+
+    private val specialEntity = ArrayList<SpecialTextEntity>()
+
     constructor(context: Context) : super(context) {
         initParams()
     }
@@ -119,7 +122,7 @@ class SpecialTextView : AppCompatTextView {
      * 将多个单独的特殊字符拼接起来,适用于没有完整字符的情况 注意和 setTotalText 区分
      */
     private fun appendMode(): TextBuilder {
-        specialArr.clear()
+        specialEntity.clear()
         connectionMode = true
         mSpannableString = null
         mWholeText = ""
@@ -151,12 +154,15 @@ class SpecialTextView : AppCompatTextView {
             mWholeText += special
             currentSpecialIndex = mWholeText.length
         } else {
-            currentSpecialIndex = getStartIndexOf(special)+1
+            currentSpecialIndex = getStartIndexOf(special) + 1
         }
         currentSpecial = special
-//        specialArr.add(special)
-        setSpecial(special, color, textSize)
-        setSpecialClick(enabledClick, special, underline = underline)
+
+        val entity = SpecialTextEntity(special, color, textSize, enabledClick, underline)
+        specialEntity.add(entity)
+//
+//        setSpecial(special, color, textSize)
+//        setSpecialClick(enabledClick, special, underline = underline)
         return this
     }
 
@@ -234,7 +240,6 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
-    private val specialArr = ArrayList<String>()
 
     /**
      *
@@ -283,7 +288,6 @@ class SpecialTextView : AppCompatTextView {
         }
         if (mSpannableString == null)
             getSpannableString()
-
         val start = if (startInt == -1) getSpecialIndexOf(special) else startInt
         val end = start + special.length
         try {
@@ -425,12 +429,18 @@ class SpecialTextView : AppCompatTextView {
 
     //设置字符串完成
     internal fun complete() {
+        if (null == mSpannableString)
+            getSpannableString()
+        specialEntity.forEach {
+            it.apply {
+                setSpecial(special, color, textSize)
+                setSpecialClick(enabledClick, special, underline = underline)
+            }
+        }
         if (isNeedMovementMethod) {
             isNeedMovementMethod = false
             movementMethod = LinkMovementMethod.getInstance()
         }
-        if (null == mSpannableString)
-            getSpannableString()
         text = mSpannableString
     }
 

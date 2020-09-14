@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     private var a = "天地玄黄,宇宙洪荒,日月盈昃,辰宿列张."
     private var a1 = "天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
     private var xh = "玄黄"
-    private var hl = "洪荒"
+    private var hh = "洪荒"
     private var yz = "      盈昃"
     private var lz = "列张"
     private var f = "蛤蛤"
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         tv_text3.setEnabledLog(true)
-//        setOneSpecialText()
+        setOneSpecialText()
         setManySpecialText()
 //        setEndText()
 //        special()
@@ -63,11 +63,11 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     private fun setManySpecialText() {
         tv_text2.setMultipleText(a)
                 .append(xh, R.color.colorPrimary)
-                .append(hl, R.color.colorAccent)
-                .addImage(R.mipmap.ic_launcher, 7,8,enabledClick = true)
-                .append(yz, R.color.colorPrimaryDark, enabledClick = true)
-                .append(lz, R.color.color_fe68, enabledClick = true)
-                .addImage(R.mipmap.ic_launcher, enabledClick = true)
+                .append(hh, R.color.colorAccent, enabledClick = true,underline = true)
+//                .addImage(R.mipmap.ic_launcher, 7,8,enabledClick = true)
+                .append(yz, R.color.colorPrimaryDark)
+                .append(lz, R.color.color_fe68, enabledClick = true,underline = true)
+//                .addImage(R.mipmap.ic_launcher, enabledClick = true)
                 .append(f, R.color.colorPrimary)//设置一个不包含的字符 测试
                 .complete()
     }
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     private fun funConnectionMode() {
         tv_text4.setMultipleText()
                 .append(" $xh", R.color.colorPrimary)
-                .append(hl, R.color.colorAccent, enabledClick = true)
+                .append(hh, R.color.colorAccent, enabledClick = true)
                 .append(yz, R.color.colorAccent, 10, enabledClick = true)
                 .append(lz, R.color.color_fe68, enabledClick = true)
 //                .addImage(R.mipmap.ic_bottom_arrow)
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     private fun funSpecialBackGround() {
         tv_text5.setMultipleText()
                 .append(xh, R.color.colorPrimary)
-                .append(hl, R.color.colorAccent, enabledClick = true)
+                .append(hh, R.color.colorAccent, enabledClick = true)
                 .append(yz, R.color.colorPrimaryDark, enabledClick = true)
                 .append(lz, R.color.color_fe68, enabledClick = true)
                 .append(a1, R.color.colorPrimary)
