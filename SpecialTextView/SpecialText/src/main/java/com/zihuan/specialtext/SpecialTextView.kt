@@ -59,6 +59,9 @@ class SpecialTextView : AppCompatTextView {
 
     private val specialEntity = ArrayList<SpecialTextEntity>()
 
+    //标记末尾图片模式
+    private var setEndImageTag = -1
+
     constructor(context: Context) : super(context) {
         initParams()
     }
@@ -157,12 +160,8 @@ class SpecialTextView : AppCompatTextView {
             currentSpecialIndex = getStartIndexOf(special) + 1
         }
         currentSpecial = special
-
         val entity = SpecialTextEntity(special, color, textSize, enabledClick, underline)
         specialEntity.add(entity)
-//
-//        setSpecial(special, color, textSize)
-//        setSpecialClick(enabledClick, special, underline = underline)
         return this
     }
 
@@ -230,6 +229,7 @@ class SpecialTextView : AppCompatTextView {
             mWholeText += text.plus(if (imgRes != -1) "  " else "")//如果末尾有图片的话，为图片预留一个空格占位
             Logger("目标行拼接后 $mWholeText")
             getSpannableString()
+            setEndImageTag = 1
             if (imgRes != -1) {
                 addImage(imgRes)
             }
@@ -267,13 +267,27 @@ class SpecialTextView : AppCompatTextView {
             }
             end = start.plus(1)
         }
-//        如果不想要居中对齐 可以用系统的ImageSpan 提供了两种对齐方式，ImageSpan.ALIGN_BASELINE、ALIGN_BOTTOM
-        val imageSpan = SpecialImageSpan(context, res)
-        if (mSpannableString == null)
-            getSpannableString()
-//        mSpannableString?.getSpanEnd()
-        mSpannableString?.setSpan(imageSpan, start, end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-        setSpecialClick(enabledClick, res.toString(), start, end)
+        if (setEndImageTag == -1) {
+            val entity = SpecialTextEntity(currentSpecial, res, start, end, enabledClick)
+            specialEntity.add(entity)
+        } else {
+            setImg(res, start, end)
+        }
+        return this
+    }
+
+    /**
+     * 为指定的文字设置特殊的背景色
+     * 注意：如果设置的图片的高度大于文字的高度，背景的高度会以图片的高度为准
+     * 如有需要可以重写drawBackGround方法，手动计算 top和bottom
+     */
+    internal fun addBackGround(res: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): SpecialTextView {
+        var start = getSpecialIndexOf(special)
+        if (start < 0) return this
+        var end = start + special.length
+        if (start < 0) return this
+        val entity = SpecialTextEntity(special, res, start, end, height, width, textColor)
+        specialEntity.add(entity)
         return this
     }
 
@@ -298,6 +312,26 @@ class SpecialTextView : AppCompatTextView {
         } catch (e: Exception) {
             Logger("没有发现当前字符>>>> $special  $e")
         }
+    }
+
+    private fun setImg(res: Int, start: Int = -1, end: Int = -1) {
+        //        如果不想要居中对齐 可以用系统的ImageSpan 提供了两种对齐方式，ImageSpan.ALIGN_BASELINE、ALIGN_BOTTOM
+        val imageSpan = SpecialImageSpan(context, res)
+        mSpannableString?.setSpan(imageSpan, start, end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+    }
+
+    private fun setBg(resId: Int, textColor: Int, start: Int, end: Int, height: Int = 0, width: Int = 0) {
+        var bg = BackGroundImageSpan(resId, resources.getDrawable(resId))
+        if (height != 0) {
+            bg.setHeight(height)
+        }
+        if (width != 0) {
+            bg.setWidth(width)
+        }
+        if (textColor != 0) {
+            bg.setColor(resources.getColor(textColor))
+        }
+        mSpannableString?.setSpan(bg, start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
     }
 
     /**
@@ -338,32 +372,6 @@ class SpecialTextView : AppCompatTextView {
                 mSpecialTextClick?.specialClick(special)
             }
         }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        return this
-    }
-
-    /**
-     * 为指定的文字设置特殊的背景色
-     * 注意：如果设置的图片的高度大于文字的高度，背景的高度会以图片的高度为准
-     * 如有需要可以重写drawBackGround方法，手动计算 top和bottom
-     */
-    internal fun addBackGround(resId: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): SpecialTextView {
-        var start = getSpecialIndexOf(special)
-        if (start < 0) return this
-        var end = start + special.length
-        if (start < 0) return this
-        var bg = BackGroundImageSpan(resId, resources.getDrawable(resId))
-        if (height != 0) {
-            bg.setHeight(height)
-        }
-        if (width != 0) {
-            bg.setWidth(width)
-        }
-        if (textColor != 0) {
-            bg.setColor(resources.getColor(textColor))
-        }
-        if (mSpannableString == null)
-            getSpannableString()
-        mSpannableString?.setSpan(bg, start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
         return this
     }
 
@@ -433,8 +441,21 @@ class SpecialTextView : AppCompatTextView {
             getSpannableString()
         specialEntity.forEach {
             it.apply {
-                setSpecial(special, color, textSize)
-                setSpecialClick(enabledClick, special, underline = underline)
+                var clickTag = special
+                when (type) {
+                    0 -> {
+                        setSpecial(special, color, textSize)
+                    }
+                    1 -> {
+                        setImg(res, start, end)
+                        clickTag = res.toString()
+                    }
+                    2 -> {
+                        setBg(res, textColor, start, end, height, width)
+                        clickTag = res.toString()
+                    }
+                }
+                setSpecialClick(enabledClick, clickTag, underline = underline)
             }
         }
         if (isNeedMovementMethod) {

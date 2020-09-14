@@ -43,10 +43,10 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         tv_text3.setEnabledLog(true)
         setOneSpecialText()
         setManySpecialText()
-//        setEndText()
-//        special()
-//        funConnectionMode()
-//        funSpecialBackGround()
+        setEndText()
+        special()
+        funConnectionMode()
+        funSpecialBackGround()
     }
 
     //加一个设置
