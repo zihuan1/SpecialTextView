@@ -19,11 +19,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
-    private var a = "天地玄黄,宇宙洪荒,日月盈昃,辰宿列张."
+    private var a = "天地玄黄,宇宙洪荒,日月盈昃,辰宿列张 —"
     private var a1 = "天对地，雨对风，大陆对长空，山花对海树，赤日对苍穹。"
     private var xh = "玄黄"
     private var hh = "洪荒"
     private var yz = "      盈昃"
+    private var cs = "辰宿"
     private var lz = "列张"
     private var f = "蛤蛤"
     var g = "更多"
@@ -41,19 +42,23 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         tv_text3.setEnabledLog(true)
-        setOneSpecialText()
-        setManySpecialText()
+//        setOneSpecialText()
+//        setManySpecialText()
+//        funConnectionMode()
+//        funSpecialBackGround()
         setEndText()
+
+
         special()
-        funConnectionMode()
-        funSpecialBackGround()
+
     }
 
-    //加一个设置
+    //目前已知的问题1 如果把目标字符设置为可点击，再再后面追加可点击的图片，如果图片大于一个字符的宽度
+    // 那么靠近特殊字符一次的图片的一半宽度被视为目标字符的点击区域（如 tv_text2 后面图片点击左半边会响应文字的事件）
 
     //设置单个
     private fun setOneSpecialText() {
-        tv_text1.setSingleText(a, xh, R.color.colorPrimary)
+        tv_text1.setSingleText(a, xh, R.color.colorPrimary, 30, enabledClick = true, underline = true)
 //        val html = "<html><font color=\"#666666\" size=\"10\">忘记密码?" +
 //                "</font><font color=\"#0000ff\">联系客服</font></html>"
 //        tv_text1.setText(Html.fromHtml(html))
@@ -62,13 +67,16 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     //连续设置
     private fun setManySpecialText() {
         tv_text2.setMultipleText(a)
-                .append(xh, R.color.colorPrimary)
-                .append(hh, R.color.colorAccent, enabledClick = true,underline = true)
-//                .addImage(R.mipmap.ic_launcher, 7,8,enabledClick = true)
-                .append(yz, R.color.colorPrimaryDark)
-                .append(lz, R.color.color_fe68, enabledClick = true,underline = true)
-//                .addImage(R.mipmap.ic_launcher, enabledClick = true)
-                .append(f, R.color.colorPrimary)//设置一个不包含的字符 测试
+                .addText(xh, R.color.colorPrimary, enabledClick = true, underline = true)
+                .addImage(R.mipmap.ic_bottom_arrow, enabledClick = true)
+                .addText(hh, R.color.colorAccent, enabledClick = true, underline = true)
+                .addImage(R.mipmap.ic_launcher, enabledClick = true)
+                .addText(yz, R.color.colorPrimaryDark)
+                .addText(cs, R.color.colorPrimaryDark, enabledClick = true, underline = true)
+                .addText(lz, R.color.color_fe68, enabledClick = true, underline = true)
+                .addText("—", R.color.colorPrimaryDark, underline = true)
+                .addImage(R.mipmap.ic_27, enabledClick = true)
+                .addText(f, R.color.colorPrimary)//设置一个不包含的字符 测试
                 .complete()
     }
 
@@ -76,7 +84,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
         tv_text3.setMultipleText(test)
-                .setEndText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
+                .setFoldText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -92,25 +100,25 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     private fun funConnectionMode() {
         tv_text4.setMultipleText()
-                .append(" $xh", R.color.colorPrimary)
-                .append(hh, R.color.colorAccent, enabledClick = true)
-                .append(yz, R.color.colorAccent, 10, enabledClick = true)
-                .append(lz, R.color.color_fe68, enabledClick = true)
+                .addText(" $xh", R.color.colorPrimary)
+                .addText(hh, R.color.colorAccent, enabledClick = true)
+                .addText(yz, R.color.colorAccent, 10, enabledClick = true)
+                .addText(lz, R.color.color_fe68, enabledClick = true)
 //                .addImage(R.mipmap.ic_bottom_arrow)
-                .append("$f ", R.color.colorPrimary, 10, enabledClick = true)
+                .addText("$f ", R.color.colorPrimary, 10, enabledClick = true)
                 .addImage(R.mipmap.ic_27, 0, 1)
-                .addBackGround(R.mipmap.ic_27, yz, 44, 140, R.color.color_fe68)
+                .addBackground(R.mipmap.ic_27, yz, 44, 140, R.color.color_fe68)
                 .complete()
     }
 
     private fun funSpecialBackGround() {
         tv_text5.setMultipleText()
-                .append(xh, R.color.colorPrimary)
-                .append(hh, R.color.colorAccent, enabledClick = true)
-                .append(yz, R.color.colorPrimaryDark, enabledClick = true)
-                .append(lz, R.color.color_fe68, enabledClick = true)
-                .append(a1, R.color.colorPrimary)
-                .addBackGround(R.drawable.bg_date_true, lz)
+                .addText(xh, R.color.colorPrimary)
+                .addText(hh, R.color.colorAccent, enabledClick = true)
+                .addText(yz, R.color.colorPrimaryDark, enabledClick = true)
+                .addText(lz, R.color.color_fe68, enabledClick = true)
+                .addText(a1, R.color.colorPrimary)
+                .addBackground(R.drawable.bg_date_true, lz)
                 .complete()
     }
 
@@ -121,19 +129,29 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         val spannableString = SpannableStringBuilder()
         spannableString.append(a)
         spannableString.append(a1)
+
+        //文字颜色
+        val colorSpan = ForegroundColorSpan(Color.parseColor("#FFFFFF"))
+        spannableString.setSpan(colorSpan, 5, 9, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+
         //图片
         val imageSpan = ImageSpan(this, R.mipmap.ic_launcher)
-        spannableString.setSpan(imageSpan, 2, 4, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+        spannableString.setSpan(imageSpan, 20, 21, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
         //点击事件
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(view: View) {
                 Toast.makeText(this@MainActivity, "点击图片", Toast.LENGTH_SHORT).show()
             }
         }
-        spannableString.setSpan(clickableSpan, 2, 4, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-        //文字颜色
-        val colorSpan = ForegroundColorSpan(Color.parseColor("#FFFFFF"))
-        spannableString.setSpan(colorSpan, 5, 9, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+        spannableString.setSpan(clickableSpan, 20, 21, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        val clickableSpan2 = object : ClickableSpan() {
+            override fun onClick(view: View) {
+                Toast.makeText(this@MainActivity, "文字", Toast.LENGTH_SHORT).show()
+            }
+        }
+        spannableString.setSpan(clickableSpan2, 10, 20, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
         //文字背景颜色
         val bgColorSpan = BackgroundColorSpan(Color.parseColor("#009ad6"))
         spannableString.setSpan(bgColorSpan, 5, 9, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)

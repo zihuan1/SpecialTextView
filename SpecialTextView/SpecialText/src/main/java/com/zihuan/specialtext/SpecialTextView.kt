@@ -25,7 +25,8 @@ class SpecialTextView : AppCompatTextView {
     private var TAG = "SpecialTextView"
     private var mWholeText = ""//完整字符串
     private lateinit var mWholeTextCopy: String//完整字符串
-    private var isNeedMovementMethod = false//是否需要设置分段点击的方法
+
+    //    private var isNeedMovementMethod = false//是否需要设置分段点击的方法
     private var mSpannableString: SpannableStringBuilder? = null
     private var mSpecialTextClick: SpecialTextClick? = null
     private var mSpecialTextFirstIndex = false//默认取关键字最后出现的位置
@@ -59,8 +60,6 @@ class SpecialTextView : AppCompatTextView {
 
     private val specialEntity = ArrayList<SpecialTextEntity>()
 
-    //标记末尾图片模式
-    private var setEndImageTag = -1
 
     constructor(context: Context) : super(context) {
         initParams()
@@ -83,7 +82,7 @@ class SpecialTextView : AppCompatTextView {
             var par = layoutParams as ViewGroup.MarginLayoutParams
             leftMargin = par.leftMargin
             rightMargin = par.rightMargin
-            Logger("leftMargin $leftMargin")
+//            Logger("leftMargin $leftMargin")
         }
     }
 
@@ -96,10 +95,9 @@ class SpecialTextView : AppCompatTextView {
      * @param enabledClick 是否设置点击事件
      * @param underline 当前字段是否需要下划线 默认不需要
      */
-    fun setSingleText(wholeString: String, special: String, color: Int, enabledClick: Boolean = false, underline: Boolean = false) {
+    fun setSingleText(wholeString: String, special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false) {
         setMultipleText(wholeString)
-        setSpecial(special, color)
-        setSpecialClick(enabledClick, special, underline = underline)
+        addText(special, color, textSize, enabledClick, underline)
         complete()
     }
 
@@ -107,7 +105,7 @@ class SpecialTextView : AppCompatTextView {
      * 当一段文字中有多个特殊字符串的时候,先调用这个方法,再调用 append
      * 如果 @param wholeString为空的话，将转换为 appendMode 模式</p>
      * @param wholeString 完整的字符串
-     * @sample append
+     * @sample addText
      */
     fun setMultipleText(wholeString: String = ""): TextBuilder {
         if (wholeString.isNotEmpty()) {
@@ -152,7 +150,7 @@ class SpecialTextView : AppCompatTextView {
      * @param enabledClick 是否设置点击事件
      * @param underline 当前字段是否需要下划线 默认不需要
      */
-    internal fun append(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
+    internal fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
         if (connectionMode) {
             mWholeText += special
             currentSpecialIndex = mWholeText.length
@@ -160,12 +158,19 @@ class SpecialTextView : AppCompatTextView {
             currentSpecialIndex = getStartIndexOf(special) + 1
         }
         currentSpecial = special
-        val entity = SpecialTextEntity(special, color, textSize, enabledClick, underline)
+        val entity = SpecialTextEntity(special, specialEntity.size).also {
+            it.special = special
+            it.color = color
+            it.textSize = textSize
+            it.enabledClick = enabledClick
+            it.underline = underline
+        }
         specialEntity.add(entity)
         return this
     }
 
     /**
+     * 设置可折叠的文字
      * @param text 特殊字符串
      * @param imgRes 追加在最后的图片
      * @param enabledClick 是否需要点击事件
@@ -173,7 +178,7 @@ class SpecialTextView : AppCompatTextView {
      * @param extraLength 额外追加的截取长度，比如用两个逗号替换成两个汉字这种情况就需要多截取几个长度
      */
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-    internal fun setEndText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): SpecialTextView {
+    internal fun setFoldText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): SpecialTextView {
         mEndText = text; mEndTextColor = color; mImageRes = imgRes; mEnabledClick = enabledClick; mUnderline = underline; mExtraLength = extraLength; mEndTextLine; isEndText = true
         //先设置文本否则拿不到宽度和行数
         this.text = mWholeText
@@ -185,7 +190,7 @@ class SpecialTextView : AppCompatTextView {
             var wholeLen = paint.measureText(mWholeText)
             Logger("设置的最大行数 $maxLines 实际行数 $lineCount 字符串实际宽度 $wholeLen")
             var lineGreaterMax = if (lineCount < maxLines) {//如果实际行数小于设置的最大行数，设置到实际的最后一行
-                Log.e(TAG, "实际行数小于设置的最大行数")
+                Logger("实际行数小于设置的最大行数")
                 targetLine = lineCount - 1
                 false
             } else true
@@ -226,20 +231,22 @@ class SpecialTextView : AppCompatTextView {
             mWholeText = mWholeText.substring(0, layout.getLineEnd(targetLine) - textPlusImgLen)
             cutEnter()
             Logger("目标行切割后 $mWholeText")
-            mWholeText += text.plus(if (imgRes != -1) "  " else "")//如果末尾有图片的话，为图片预留一个空格占位
+            mWholeText += text//如果末尾有图片的话，为图片预留一个空格占位
             Logger("目标行拼接后 $mWholeText")
-            getSpannableString()
-            setEndImageTag = 1
-            if (imgRes != -1) {
-                addImage(imgRes)
-            }
-            setSpecial(text, color)
-            setSpecialClick(enabledClick, text, end = mWholeText.length, underline = underline)
-            complete()
+            setEndImg(text, color, imgRes, enabledClick, underline, extraLength)
         }
         return this
     }
 
+
+    private fun setEndImg(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1) {
+        specialEntity.clear()
+        addText(text, color, enabledClick = enabledClick, underline = underline)
+        if (imgRes != -1) {
+            addImage(imgRes, enabledClick = enabledClick)
+        }
+        complete()
+    }
 
     /**
      *
@@ -251,28 +258,27 @@ class SpecialTextView : AppCompatTextView {
      * @param enabledClick 是否设置点击事件
      * 点击后返回 图片的资源id 以此判断点击的位置
      */
-    internal fun addImage(res: Int, start: Int = -1, end: Int = -1, enabledClick: Boolean = false): SpecialTextView {
-        var start = start
+    internal fun addImage(res: Int, start2: Int = -1, end: Int = -1, enabledClick: Boolean = false): SpecialTextView {
+        var start = start2
         var end = end
         if (start == -1) {
             start = currentSpecialIndex
             //如果mWholeText 不包含currentSpecial 默认追加到最后
+            val len= mWholeText.length
             if (start < 0) {
                 start = mWholeText.length.minus(1)
-            } else {
-                //在指定的位置追加一个空格用来当作图片的预留位置
-//                mWholeText = StringBuilder(mWholeText)
-//                        .insert(start, "  ")
-//                        .toString()
             }
             end = start.plus(1)
         }
-        if (setEndImageTag == -1) {
-            val entity = SpecialTextEntity(currentSpecial, res, start, end, enabledClick)
-            specialEntity.add(entity)
-        } else {
-            setImg(res, start, end)
+        val entity = SpecialTextEntity(currentSpecial, specialEntity.size).also {
+            it.res = res
+            it.startAuto = start2 < 0
+            it.start = start
+            it.end = end
+            it.enabledClick = enabledClick
+            it.type = it.TYPE_IMAGE
         }
+        specialEntity.add(entity)
         return this
     }
 
@@ -281,12 +287,20 @@ class SpecialTextView : AppCompatTextView {
      * 注意：如果设置的图片的高度大于文字的高度，背景的高度会以图片的高度为准
      * 如有需要可以重写drawBackGround方法，手动计算 top和bottom
      */
-    internal fun addBackGround(res: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): SpecialTextView {
+    internal fun addBackground(res: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): SpecialTextView {
         var start = getSpecialIndexOf(special)
         if (start < 0) return this
         var end = start + special.length
-        if (start < 0) return this
-        val entity = SpecialTextEntity(special, res, start, end, height, width, textColor)
+//        if (start < 0) return this
+        val entity = SpecialTextEntity(special, specialEntity.size).also {
+            it.res = res
+            it.start = start
+            it.end = end
+            it.height = height
+            it.width = width
+            it.textColor = textColor
+            it.type = it.TYPE_BACKGROUND
+        }
         specialEntity.add(entity)
         return this
     }
@@ -300,12 +314,10 @@ class SpecialTextView : AppCompatTextView {
         if (connectionMode) {
             mSpannableString?.append(special)
         }
-        if (mSpannableString == null)
-            getSpannableString()
         val start = if (startInt == -1) getSpecialIndexOf(special) else startInt
         val end = start + special.length
         try {
-            mSpannableString?.setSpan(ForegroundColorSpan(resources.getColor(color)), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+            mSpannableString?.setSpan(ForegroundColorSpan(resources.getColor(color)), start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
             if (textSize != 0) {
                 mSpannableString?.setSpan(AbsoluteSizeSpan(textSize, true), start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
             }
@@ -342,18 +354,17 @@ class SpecialTextView : AppCompatTextView {
      * @param end 点击事件结束的位置
      * @param underline 是否需要下划线
      */
-    private fun setSpecialClick(enabledClick: Boolean = false, special: String, start: Int = -1, end: Int = -1, underline: Boolean = false): SpecialTextView {
+    private fun setSpecialClick(enabledClick: Boolean = false, special: String, start1: Int = -1, end: Int = -1, underline: Boolean = false): SpecialTextView {
         if (!enabledClick) return this
-        isNeedMovementMethod = true
         if (mSpecialTextClick == null) {
             if (context is SpecialTextClick) {
                 mSpecialTextClick = context as SpecialTextClick
             } else {
-                Log.e(TAG, "没有实现监听事件 SpecialTextClick")
+                Logger("没有实现监听事件 SpecialTextClick")
             }
         }
 //      计算特殊字符的起始位置
-        var start = start
+        var start = start1
         var end = end
         if (start == -1) {
             start = getSpecialIndexOf(special)
@@ -371,15 +382,15 @@ class SpecialTextView : AppCompatTextView {
                 resetEndText()
                 mSpecialTextClick?.specialClick(special)
             }
-        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }, start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
         return this
     }
 
 
-    //递归删除换行符
+    //递归删除尾部换行符
     private fun cutEnter() {
         if (mWholeText.isNotEmpty()) {
-            mWholeText.run {
+            mWholeText.apply {
                 var enter = substring(length - 1, length)
                 if (enter == "\n") {
                     Logger("包含回车，去除")
@@ -398,11 +409,11 @@ class SpecialTextView : AppCompatTextView {
                     text = mWholeTextCopy
                     post {
                         maxLines = lineCount
-                        setEndText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+                        setFoldText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
                     }
                 } else {
                     maxLines = mEndTextLine
-                    setEndText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+                    setFoldText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
                 }
                 if (mDisableAnim)
                     post {
@@ -437,31 +448,44 @@ class SpecialTextView : AppCompatTextView {
 
     //设置字符串完成
     internal fun complete() {
-        if (null == mSpannableString)
-            getSpannableString()
+        //过滤所有的image特殊位
+        val insetLength = 1
+        specialEntity.filter {
+            it.type == it.TYPE_IMAGE && it.startAuto
+        }.forEachIndexed { index, entity ->
+            val newPos = if (entity.end != mWholeText.length - 1) index else 1
+            mWholeText = StringBuilder(mWholeText)
+                    .insert(entity.end + newPos, " ")
+                    .toString()
+            //移动到目标字符串后面的空格
+            entity.start += newPos + insetLength
+            //占据所有空格位置
+            entity.end = entity.start + insetLength
+        }
+        getSpannableString()
         specialEntity.forEach {
             it.apply {
                 var clickTag = special
                 when (type) {
-                    0 -> {
+                    TYPE_TEXT -> {
                         setSpecial(special, color, textSize)
                     }
-                    1 -> {
+                    TYPE_IMAGE -> {
                         setImg(res, start, end)
                         clickTag = res.toString()
                     }
-                    2 -> {
+                    TYPE_BACKGROUND -> {
                         setBg(res, textColor, start, end, height, width)
                         clickTag = res.toString()
                     }
                 }
-                setSpecialClick(enabledClick, clickTag, underline = underline)
+                setSpecialClick(enabledClick, clickTag, start, end, underline = underline)
             }
         }
-        if (isNeedMovementMethod) {
-            isNeedMovementMethod = false
-            movementMethod = LinkMovementMethod.getInstance()
-        }
+//        if (isNeedMovementMethod) {
+//            isNeedMovementMethod = false
+        movementMethod = LinkMovementMethod.getInstance()
+//        }
         text = mSpannableString
     }
 
@@ -485,7 +509,7 @@ class SpecialTextView : AppCompatTextView {
     }
 
     private fun Logger(msg: String) {
-        if (enabledLog) {
+        if (enabledLog || BuildConfig.DEBUG) {
             Log.e(TAG, msg)
         }
     }

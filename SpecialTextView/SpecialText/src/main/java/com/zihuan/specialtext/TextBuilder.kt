@@ -1,10 +1,9 @@
 package com.zihuan.specialtext
 
 import android.os.Build
-import android.text.Spanned
 import androidx.annotation.RequiresApi
 
-class TextBuilder(val textView: SpecialTextView) {
+class TextBuilder(private val textView: SpecialTextView) {
 
 
     /**
@@ -14,8 +13,8 @@ class TextBuilder(val textView: SpecialTextView) {
      * @param enabledClick 是否设置点击事件
      * @param underline 当前字段是否需要下划线 默认不需要
      */
-    fun append(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): TextBuilder {
-        textView.append(special, color, textSize, enabledClick, underline)
+    fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): TextBuilder {
+        textView.addText(special, color, textSize, enabledClick, underline)
         return this
     }
 
@@ -43,8 +42,8 @@ class TextBuilder(val textView: SpecialTextView) {
      * @param width 背景宽度
      * @param textColor 字符色值
      */
-    fun addBackGround(resId: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): TextBuilder {
-        textView.addBackGround(resId, special, height, width, textColor)
+    fun addBackground(resId: Int, special: String, height: Int = 0, width: Int = 0, textColor: Int = 0): TextBuilder {
+        textView.addBackground(resId, special, height, width, textColor)
         return this
     }
 
@@ -59,8 +58,8 @@ class TextBuilder(val textView: SpecialTextView) {
      *  在此处追加图片耦合度比较高应该拆分出来
      */
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-    fun setEndText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): TextBuilder {
-        textView.setEndText(text, color, imgRes, enabledClick, underline, extraLength)
+    fun setFoldText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): TextBuilder {
+        textView.setFoldText(text, color, imgRes, enabledClick, underline, extraLength)
         return this
     }
 

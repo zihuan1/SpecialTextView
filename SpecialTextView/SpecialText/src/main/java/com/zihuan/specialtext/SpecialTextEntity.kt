@@ -1,41 +1,20 @@
 package com.zihuan.specialtext
 
 class SpecialTextEntity {
-    constructor(special: String, color: Int, textSize: Int, enabledClick: Boolean, underline: Boolean) {
-        this.special = special
-        this.color = color
-        this.textSize = textSize
-        this.enabledClick = enabledClick
-        this.underline = underline
-    }
+    val TYPE_TEXT = 0
+    val TYPE_IMAGE = 1
+    val TYPE_BACKGROUND = 2
 
-    /**
-     * 图片资源
-     */
-    constructor(special: String, res: Int, start: Int, end: Int, enabledClick: Boolean) {
+    constructor(special: String, index: Int) {
         this.special = special
-        this.res = res
-        this.start = start
-        this.end = end
-        this.enabledClick = enabledClick
-        this.type = 1
+        currentIndex = index
     }
-
-    //背景资源
-    constructor(special: String, res: Int, start: Int, end: Int, height: Int = 0, width: Int = 0, textColor: Int = 0) {
-        this.special = special
-        this.res = res
-        this.start = start
-        this.end = end
-        this.height = height
-        this.width = width
-        this.textColor = textColor
-        this.type = 2
-    }
-
 
     //类型
     var type = 0
+
+    //当前的位置
+    var currentIndex = -1
 
     //特殊字符
     var special = ""
@@ -45,8 +24,10 @@ class SpecialTextEntity {
     var enabledClick = false
     var underline = false
     var res = 0
-    var start = 0
-    var end = 0
+    //是否由系统设置的起始位置
+    var startAuto = true
+    var start = -1
+    var end = -1
     var height = 0
     var width = 0
 }
