@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         var a = "你好哈哈ok吗ok"
 //        a = StringBuilder(a)
 //                .insert(3, "a").toString()
-        Log.e("测试",a.indexOf("ok").toString()+"---"+ a.lastIndexOf("ok").toString())
+        Log.e("测试", a.indexOf("ok").toString() + "---" + a.lastIndexOf("ok").toString())
         setOneSpecialText()
         setManySpecialText()
         funConnectionMode()
@@ -75,9 +75,9 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     private fun setManySpecialText() {
         tv_text2.setMultipleText(a)
                 .addText(xh, R.color.colorPrimary, enabledClick = true, underline = true)
-//                .addImage(R.mipmap.ic_bottom_arrow, enabledClick = true)
+                .addImage(R.mipmap.ic_bottom_arrow, enabledClick = true)
                 .addText(hh, R.color.colorAccent, enabledClick = true, underline = true)
-//                .addImage(R.mipmap.ic_launcher, enabledClick = true)
+                .addImage(R.mipmap.ic_launcher, enabledClick = true)
                 .addText(yz, R.color.colorPrimaryDark)
 //                .addText(cs, R.color.colorPrimaryDark, enabledClick = true, underline = true)
                 .addText(cs + lz, R.color.color_fe68, enabledClick = true, underline = true)
