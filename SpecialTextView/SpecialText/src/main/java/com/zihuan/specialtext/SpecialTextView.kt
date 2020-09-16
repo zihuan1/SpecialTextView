@@ -155,7 +155,8 @@ class SpecialTextView : AppCompatTextView {
             mWholeText += special
             currentImageStart = mWholeText.length
         } else {
-            currentImageStart = getStartIndexOf(special) + special.length-1
+            currentImageStart = getSpecialIndexOf(special) + special.length - 1
+//            currentImageStart = getStartIndexOf(special) + special.length - 1
         }
         currentSpecial = special
         val entity = SpecialTextEntity(special, specialEntity.size).also {
@@ -241,6 +242,7 @@ class SpecialTextView : AppCompatTextView {
 
     private fun setEndImg(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1) {
         specialEntity.clear()
+        setLastIndexOf()
         addText(text, color, enabledClick = enabledClick, underline = underline)
         if (imgRes != -1) {
             addImage(imgRes, enabledClick = enabledClick)

@@ -45,15 +45,15 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         setContentView(R.layout.activity_main)
         tv_text3.setEnabledLog(true)
 
-        var a = "你好哈哈ok吗"
+        var a = "你好哈哈ok吗ok"
 //        a = StringBuilder(a)
 //                .insert(3, "a").toString()
-        Log.e("测试", a.lastIndexOf("ok").toString())
-//        setOneSpecialText()
+        Log.e("测试",a.indexOf("ok").toString()+"---"+ a.lastIndexOf("ok").toString())
+        setOneSpecialText()
         setManySpecialText()
-//        funConnectionMode()
-//        funSpecialBackGround()
-//        setEndText()
+        funConnectionMode()
+        funSpecialBackGround()
+        setEndText()
 
 
         special()
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 //                .addImage(R.mipmap.ic_launcher, enabledClick = true)
                 .addText(yz, R.color.colorPrimaryDark)
 //                .addText(cs, R.color.colorPrimaryDark, enabledClick = true, underline = true)
-                .addText(cs+lz, R.color.color_fe68, enabledClick = true, underline = true)
+                .addText(cs + lz, R.color.color_fe68, enabledClick = true, underline = true)
                 .addText("—", R.color.colorPrimaryDark, underline = true)
                 .addImage(R.mipmap.ic_27, enabledClick = true)
                 .addText(f, R.color.colorPrimary)//设置一个不包含的字符 测试
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
-        tv_text3.setMultipleText(a1)
+        tv_text3.setMultipleText(test)
                 .setFoldText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
 
