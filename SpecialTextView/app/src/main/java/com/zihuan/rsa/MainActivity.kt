@@ -49,11 +49,11 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 //        a = StringBuilder(a)
 //                .insert(3, "a").toString()
         Log.e("测试", a.indexOf("ok").toString() + "---" + a.lastIndexOf("ok").toString())
-        setOneSpecialText()
-        setManySpecialText()
+//        setOneSpecialText()
+//        setManySpecialText()
         funConnectionMode()
-        funSpecialBackGround()
-        setEndText()
+//        funSpecialBackGround()
+//        setEndText()
 
 
         special()

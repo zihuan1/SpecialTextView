@@ -314,9 +314,9 @@ class SpecialTextView : AppCompatTextView {
             Log.e(TAG, "mWholeText为空>>>> 请先设置mWholeText")
             return
         }
-        if (connectionMode) {
-            mSpannableString?.append(special)
-        }
+//        if (connectionMode) {
+//            mSpannableString?.append(special)
+//        }
         val start = if (startInt == -1) getSpecialIndexOf(special) else startInt
         val end = start + special.length
         try {
