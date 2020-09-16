@@ -142,7 +142,7 @@ class SpecialTextView : AppCompatTextView {
 
     //当前的特殊字符
     private var currentSpecial = ""
-    private var currentSpecialIndex = -1
+    private var currentImageStart = -1
 
     /**
      * @param special 特殊的字符
@@ -153,9 +153,9 @@ class SpecialTextView : AppCompatTextView {
     internal fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
         if (connectionMode) {
             mWholeText += special
-            currentSpecialIndex = mWholeText.length
+            currentImageStart = mWholeText.length
         } else {
-            currentSpecialIndex = getStartIndexOf(special) + 1
+            currentImageStart = getStartIndexOf(special) + special.length-1
         }
         currentSpecial = special
         val entity = SpecialTextEntity(special, specialEntity.size).also {
@@ -262,13 +262,13 @@ class SpecialTextView : AppCompatTextView {
         var start = start2
         var end = end
         if (start == -1) {
-            start = currentSpecialIndex
+            start = currentImageStart
             //如果mWholeText 不包含currentSpecial 默认追加到最后
-            val len= mWholeText.length
+            val len = mWholeText.length
             if (start < 0) {
                 start = mWholeText.length.minus(1)
             }
-            end = start.plus(1)
+            end = start + 1
         }
         val entity = SpecialTextEntity(currentSpecial, specialEntity.size).also {
             it.res = res
@@ -453,12 +453,16 @@ class SpecialTextView : AppCompatTextView {
         specialEntity.filter {
             it.type == it.TYPE_IMAGE && it.startAuto
         }.forEachIndexed { index, entity ->
-            val newPos = if (entity.end != mWholeText.length - 1) index else 1
-            mWholeText = StringBuilder(mWholeText)
-                    .insert(entity.end + newPos, " ")
-                    .toString()
+            val newPos = if (entity.end < mWholeText.length - 1) index else 1
+            mWholeText = StringBuilder(mWholeText).apply {
+                if (entity.end < mWholeText.length - 1) {
+                    insert(entity.end + newPos, " ")
+                } else {
+                    append(" ")
+                }
+            }.toString()
             //移动到目标字符串后面的空格
-            entity.start += newPos + insetLength
+            entity.start += index + insetLength
             //占据所有空格位置
             entity.end = entity.start + insetLength
         }
@@ -482,10 +486,7 @@ class SpecialTextView : AppCompatTextView {
                 setSpecialClick(enabledClick, clickTag, start, end, underline = underline)
             }
         }
-//        if (isNeedMovementMethod) {
-//            isNeedMovementMethod = false
         movementMethod = LinkMovementMethod.getInstance()
-//        }
         text = mSpannableString
     }
 

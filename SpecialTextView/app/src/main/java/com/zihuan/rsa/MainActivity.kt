@@ -10,12 +10,14 @@ import android.text.style.BackgroundColorSpan
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.zihuan.specialtext.SpecialTextView
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.StringBuilder
 
 
 class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
@@ -42,11 +44,16 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         tv_text3.setEnabledLog(true)
+
+        var a = "你好哈哈ok吗"
+//        a = StringBuilder(a)
+//                .insert(3, "a").toString()
+        Log.e("测试", a.lastIndexOf("ok").toString())
 //        setOneSpecialText()
-//        setManySpecialText()
+        setManySpecialText()
 //        funConnectionMode()
 //        funSpecialBackGround()
-        setEndText()
+//        setEndText()
 
 
         special()
@@ -68,12 +75,12 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     private fun setManySpecialText() {
         tv_text2.setMultipleText(a)
                 .addText(xh, R.color.colorPrimary, enabledClick = true, underline = true)
-                .addImage(R.mipmap.ic_bottom_arrow, enabledClick = true)
+//                .addImage(R.mipmap.ic_bottom_arrow, enabledClick = true)
                 .addText(hh, R.color.colorAccent, enabledClick = true, underline = true)
-                .addImage(R.mipmap.ic_launcher, enabledClick = true)
+//                .addImage(R.mipmap.ic_launcher, enabledClick = true)
                 .addText(yz, R.color.colorPrimaryDark)
-                .addText(cs, R.color.colorPrimaryDark, enabledClick = true, underline = true)
-                .addText(lz, R.color.color_fe68, enabledClick = true, underline = true)
+//                .addText(cs, R.color.colorPrimaryDark, enabledClick = true, underline = true)
+                .addText(cs+lz, R.color.color_fe68, enabledClick = true, underline = true)
                 .addText("—", R.color.colorPrimaryDark, underline = true)
                 .addImage(R.mipmap.ic_27, enabledClick = true)
                 .addText(f, R.color.colorPrimary)//设置一个不包含的字符 测试
@@ -83,7 +90,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
-        tv_text3.setMultipleText(test)
+        tv_text3.setMultipleText(a1)
                 .setFoldText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
     }
 
