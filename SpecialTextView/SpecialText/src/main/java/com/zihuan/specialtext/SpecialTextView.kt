@@ -242,6 +242,7 @@ class SpecialTextView : AppCompatTextView {
 
     private fun setEndImg(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1) {
         specialEntity.clear()
+        //取最后一次出现的位置
         setLastIndexOf()
         addText(text, color, enabledClick = enabledClick, underline = underline)
         if (imgRes != -1) {
