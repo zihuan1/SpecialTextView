@@ -17,7 +17,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.zihuan.specialtext.SpecialTextView
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.StringBuilder
 
 
 class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
@@ -53,11 +52,8 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 //        setManySpecialText()
         funConnectionMode()
 //        funSpecialBackGround()
-//        setEndText()
-
-
+        setEndText()
         special()
-
     }
 
     //目前已知的问题1 如果把目标字符设置为可点击，再再后面追加可点击的图片，如果图片大于一个字符的宽度
@@ -91,7 +87,12 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
         tv_text3.setMultipleText(test)
-                .setFoldText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, true)
+                .setExpand("展开",R.color.color_fe68)
+                .setShrink("收起",R.color.color_fe68)
+                .setEllipsize("...")
+                .createFoldText( -1, true, true)
+//                .setFoldText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, .true)
+                .disableAnim()
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)

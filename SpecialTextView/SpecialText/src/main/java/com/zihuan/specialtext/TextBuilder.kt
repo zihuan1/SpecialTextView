@@ -1,8 +1,5 @@
 package com.zihuan.specialtext
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 class TextBuilder(private val textView: SpecialTextView) {
 
 
@@ -47,6 +44,20 @@ class TextBuilder(private val textView: SpecialTextView) {
         return this
     }
 
+    fun setExpand(text: String, color: Int = 0): TextBuilder {
+        textView.setExpand(text, color)
+        return this
+    }
+
+    fun setShrink(text: String, color: Int = 0): TextBuilder {
+        textView.setShrink(text, color)
+        return this
+    }
+
+    fun setEllipsize(text: String, color: Int = 0): TextBuilder {
+        textView.setEllipsize(text, color)
+        return this
+    }
 
     /***
      * 这个方法暂时不能和其他设置特殊字符串的方法一起使用，只能单独使用
@@ -57,9 +68,8 @@ class TextBuilder(private val textView: SpecialTextView) {
      * @param extra 额外追加的截取长度，比如用两个逗号替换成两个汉字这种情况就需要多截取几个长度
      *  在此处追加图片耦合度比较高应该拆分出来
      */
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-    fun setFoldText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): TextBuilder {
-        textView.setFoldText(text, color, imgRes, enabledClick, underline, extraLength)
+    fun createFoldText(imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): TextBuilder {
+        textView.createFoldText(imgRes, enabledClick, underline, extraLength)
         return this
     }
 

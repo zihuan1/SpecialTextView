@@ -32,8 +32,6 @@ class SpecialTextView : AppCompatTextView {
     private var mSpecialTextFirstIndex = false//默认取关键字最后出现的位置
     private var leftMargin = 0
     private var rightMargin = 0
-    private var mEndText = ""
-    private var mEndTextColor = 0
     private var mEnabledClick = false
     private var mImageRes = 0
     private var mUnderline = false
@@ -44,6 +42,8 @@ class SpecialTextView : AppCompatTextView {
 
     //连接模式
     private var connectionMode = false
+
+    private var startHeight = 0//初始高度
 
     //首次设置的行数
     private val mEndTextLine by lazy {
@@ -170,17 +170,40 @@ class SpecialTextView : AppCompatTextView {
         return this
     }
 
+    private var ellipsizeText = ""
+    private var ellipsizeColor = 0
+    internal fun setEllipsize(text: String, endTextColor: Int = 0) {
+        ellipsizeText = text
+        ellipsizeColor = endTextColor
+    }
+
+    private var expandText = ""
+    private var expandColor = 0
+    internal fun setExpand(text: String, color: Int = 0) {
+        expandText = text
+        expandColor = color
+    }
+
+    private var shrinkText = ""
+    private var shrinkColor = 0
+    internal fun setShrink(text: String, color: Int = 0) {
+        shrinkText = text
+        shrinkColor = color
+    }
+
     /**
      * 设置可折叠的文字
-     * @param text 特殊字符串
+     * @param endText 特殊字符串
      * @param imgRes 追加在最后的图片
      * @param enabledClick 是否需要点击事件
      * @param underline 是否需要下划线
      * @param extraLength 额外追加的截取长度，比如用两个逗号替换成两个汉字这种情况就需要多截取几个长度
      */
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-    internal fun setFoldText(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): SpecialTextView {
-        mEndText = text; mEndTextColor = color; mImageRes = imgRes; mEnabledClick = enabledClick; mUnderline = underline; mExtraLength = extraLength; mEndTextLine; isEndText = true
+    internal fun createFoldText(imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): SpecialTextView {
+        val endText = if (!expand) expandText else shrinkText; mImageRes = imgRes; mEnabledClick = enabledClick; mUnderline = underline; mExtraLength = extraLength; mEndTextLine; isEndText = true
+        val endTextColor = if (!expand) expandColor else shrinkColor;
+        val allEndText = (if (!expand) ellipsizeText else "") + endText
         //先设置文本否则拿不到宽度和行数
         this.text = mWholeText
         Logger("原始字符串 $mWholeText")
@@ -206,7 +229,7 @@ class SpecialTextView : AppCompatTextView {
             //获取当前行的实际宽度（能看到的内容的宽度，不算没有显示出来的）
             val endLineWidth = layout.getLineWidth(targetLine)
             //测量追加字符在当前view的配置下的实际宽度加上末尾图片的宽度
-            var textLineWidth = paint.measureText(text)
+            var textLineWidth = paint.measureText(allEndText)
             //图片的宽度是追加文字的几倍
             var textTimes = when {
                 imgRes == -1 -> 1//没有图片的情况
@@ -227,14 +250,24 @@ class SpecialTextView : AppCompatTextView {
             var textPlusImgLen = 0//追加的字符和图片的宽度
             if (width.minus(textLen) < textLineWidth.plus(imgWidth) && lineGreaterMax) {
                 //追加文字和图片所占长度
-                textPlusImgLen = text.length.times(textTimes).plus(extraLength)
+                textPlusImgLen = allEndText.length.times(textTimes).plus(extraLength)
             }
             mWholeText = mWholeText.substring(0, layout.getLineEnd(targetLine) - textPlusImgLen)
             cutEnter()
             Logger("目标行切割后 $mWholeText")
-            mWholeText += text//如果末尾有图片的话，为图片预留一个空格占位
+            mWholeText += allEndText//如果末尾有图片的话，为图片预留一个空格占位
             Logger("目标行拼接后 $mWholeText")
-            setEndImg(text, color, imgRes, enabledClick, underline, extraLength)
+            setEndImg(endText, endTextColor, imgRes, enabledClick, underline, extraLength)
+            if (startHeight == 0) {
+                startHeight = measuredHeight
+            }
+            Logger("高度高度高度 $measuredHeight ")
+            if (curClick)
+                if (expand) {
+                    animatorStart()
+                } else {
+                    animatorReverse()
+                }
         }
         return this
     }
@@ -244,6 +277,11 @@ class SpecialTextView : AppCompatTextView {
         specialEntity.clear()
         //取最后一次出现的位置
         setLastIndexOf()
+        if (ellipsizeText.isNotEmpty()) {
+            val ellColor= if (ellipsizeColor != 0) context.resources.getColor(ellipsizeColor) else currentTextColor
+            addText(ellipsizeText,ellColor)
+        }
+
         addText(text, color, enabledClick = enabledClick, underline = underline)
         if (imgRes != -1) {
             addImage(imgRes, enabledClick = enabledClick)
@@ -404,26 +442,38 @@ class SpecialTextView : AppCompatTextView {
         }
     }
 
+    var expand = false//是否是展开状态
+    private var curClick = false//本次点击事件
     private fun resetEndText() {
         if (isEndText) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                setMultipleText(mWholeTextCopy)
-                if (maxLines == mEndTextLine) {
-                    text = mWholeTextCopy
-                    post {
-                        maxLines = lineCount
-                        setFoldText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
-                    }
-                } else {
-                    maxLines = mEndTextLine
-                    setFoldText(mEndText, mEndTextColor, mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+            curClick = true
+            setMultipleText(mWholeTextCopy)
+            expand = !expand
+            if (maxLines == mEndTextLine) {
+                text = mWholeTextCopy
+                post {
+                    maxLines = lineCount
+                    createFoldText(mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
                 }
-                if (mDisableAnim)
-                    post {
-                        changeViewHeightAnimatorStart(height, maxLines.times(textSize).plus(maxLines.times(12)).toInt())
-                    }
+            } else {
+                maxLines = mEndTextLine
+                createFoldText(mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
             }
         }
+    }
+
+    private fun animatorStart() {
+        curClick = false
+        if (mDisableAnim) {
+            animator.start()
+        }
+    }
+
+    private fun animatorReverse() {
+        curClick = false
+        if (mDisableAnim)
+            animator.reverse()
+
     }
 
     internal fun setFirstIndexOf(): SpecialTextView {
@@ -525,16 +575,15 @@ class SpecialTextView : AppCompatTextView {
         fun specialClick(tag: String)
     }
 
-    //伸缩动画
-    private fun changeViewHeightAnimatorStart(startHeight: Int, endHeight: Int) {
-        if (startHeight >= 0 && endHeight >= 0) {
-            val animator = ValueAnimator.ofInt(startHeight, endHeight)
-            animator.addUpdateListener { animation ->
-                val params = layoutParams
-                params.height = animation.animatedValue as Int
-                layoutParams = params
+    private val animator by lazy {
+        ValueAnimator.ofInt(startHeight, measuredHeight).also {
+            if (startHeight >= 0) {
+                it.addUpdateListener { animation ->
+                    val params = layoutParams
+                    params.height = animation.animatedValue as Int
+                    layoutParams = params
+                }
             }
-            animator.start()
         }
     }
 
