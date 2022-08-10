@@ -68,8 +68,8 @@ class TextBuilder(private val textView: SpecialTextView) {
      * @param extra 额外追加的截取长度，比如用两个逗号替换成两个汉字这种情况就需要多截取几个长度
      *  在此处追加图片耦合度比较高应该拆分出来
      */
-    fun createFoldText(imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): TextBuilder {
-        textView.createFoldText(imgRes, enabledClick, underline, extraLength)
+    fun createFoldText(enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): TextBuilder {
+        textView.createFoldText(enabledClick, underline, extraLength)
         return this
     }
 

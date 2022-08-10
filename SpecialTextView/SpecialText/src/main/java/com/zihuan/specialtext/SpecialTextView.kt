@@ -33,7 +33,6 @@ class SpecialTextView : AppCompatTextView {
     private var leftMargin = 0
     private var rightMargin = 0
     private var mEnabledClick = false
-    private var mImageRes = 0
     private var mUnderline = false
     private var mExtraLength = 0
 
@@ -200,16 +199,14 @@ class SpecialTextView : AppCompatTextView {
      * @param extraLength 额外追加的截取长度，比如用两个逗号替换成两个汉字这种情况就需要多截取几个长度
      */
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-    internal fun createFoldText(imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): SpecialTextView {
-        val endText = if (!expand) expandText else shrinkText; mImageRes = imgRes; mEnabledClick = enabledClick; mUnderline = underline; mExtraLength = extraLength; mEndTextLine; isEndText = true
+    internal fun createFoldText(enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 0): SpecialTextView {
+        val endText = if (!expand) expandText else shrinkText; mEnabledClick = enabledClick; mUnderline = underline; mExtraLength = extraLength; mEndTextLine; isEndText = true
         val endTextColor = if (!expand) expandColor else shrinkColor;
         val allEndText = (if (!expand) ellipsizeText else "") + endText
         //先设置文本否则拿不到宽度和行数
         this.text = mWholeText
         Logger("原始字符串 $mWholeText")
-        //如果图片的
-        var imgWidth = if (imgRes != -1) BitmapFactory.decodeResource(resources, imgRes).width else 0
-        var targetLine: Int = maxLines - 1
+        var targetLine = maxLines - 1
         post {
             var wholeLen = paint.measureText(mWholeText)
             Logger("设置的最大行数 $maxLines 实际行数 $lineCount 字符串实际宽度 $wholeLen")
@@ -221,24 +218,12 @@ class SpecialTextView : AppCompatTextView {
             var targetLineText = mWholeText.substring(layout.getLineStart(targetLine), layout.getLineEnd(targetLine))
             Logger("目标字符串 $targetLineText")
             //如果目标行大于当前屏幕宽度就减去当前行的N个字符+extra N是最后要显示的特殊字符+extra是给图片预留的空间,可以自定义占几个字符宽度，如果图片大可以多占，反之少占
-            //获取当前屏幕的宽度
-            val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            val dm = DisplayMetrics()
-            wm.defaultDisplay.getMetrics(dm)
-            val width = dm.widthPixels
+            val width = widthPixels
             //获取当前行的实际宽度（能看到的内容的宽度，不算没有显示出来的）
             val endLineWidth = layout.getLineWidth(targetLine)
             //测量追加字符在当前view的配置下的实际宽度加上末尾图片的宽度
             var textLineWidth = paint.measureText(allEndText)
             //图片的宽度是追加文字的几倍
-            var textTimes = when {
-                imgRes == -1 -> 1//没有图片的情况
-                imgWidth > textLineWidth -> {//图片的宽度大于追加文本的宽度
-                    var imgDivText = imgWidth.div(textLineWidth).toInt()
-                    if (imgDivText <= 0) 2 else imgDivText
-                }
-                else -> 1//图片的宽度小于文本
-            }
             //view的宽度相当于match_parent
             var textLen = if (wholeLen > width) {//如果字符宽度大于屏幕宽度
                 endLineWidth.plus(width.minus(getWidth())).toInt()
@@ -248,16 +233,16 @@ class SpecialTextView : AppCompatTextView {
             Logger("当前行所占宽度 $endLineWidth 合计宽度 $textLen")
             //如果当前行所剩宽度小于textLineWidth实际宽度 切割掉textPlusImgLen个字符(前提是实际行大于设置的最大行，否则直接拼接)
             var textPlusImgLen = 0//追加的字符和图片的宽度
-            if (width.minus(textLen) < textLineWidth.plus(imgWidth) && lineGreaterMax) {
+            if (width.minus(textLen) < textLineWidth && lineGreaterMax) {
                 //追加文字和图片所占长度
-                textPlusImgLen = allEndText.length.times(textTimes).plus(extraLength)
+                textPlusImgLen = allEndText.length.plus(extraLength)
             }
             mWholeText = mWholeText.substring(0, layout.getLineEnd(targetLine) - textPlusImgLen)
             cutEnter()
             Logger("目标行切割后 $mWholeText")
-            mWholeText += allEndText//如果末尾有图片的话，为图片预留一个空格占位
+            mWholeText += allEndText
             Logger("目标行拼接后 $mWholeText")
-            setEndImg(endText, endTextColor, imgRes, enabledClick, underline, extraLength)
+            setEndImg(endText, endTextColor, enabledClick, underline, extraLength)
             if (startHeight == 0) {
                 startHeight = measuredHeight
             }
@@ -273,19 +258,15 @@ class SpecialTextView : AppCompatTextView {
     }
 
 
-    private fun setEndImg(text: String, color: Int, imgRes: Int = -1, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1) {
+    private fun setEndImg(text: String, color: Int, enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1) {
         specialEntity.clear()
         //取最后一次出现的位置
         setLastIndexOf()
         if (ellipsizeText.isNotEmpty()) {
-            val ellColor= if (ellipsizeColor != 0) context.resources.getColor(ellipsizeColor) else currentTextColor
-            addText(ellipsizeText,ellColor)
+            val ellColor = if (ellipsizeColor != 0) context.resources.getColor(ellipsizeColor) else currentTextColor
+            addText(ellipsizeText, ellColor)
         }
-
         addText(text, color, enabledClick = enabledClick, underline = underline)
-        if (imgRes != -1) {
-            addImage(imgRes, enabledClick = enabledClick)
-        }
         complete()
     }
 
@@ -453,11 +434,11 @@ class SpecialTextView : AppCompatTextView {
                 text = mWholeTextCopy
                 post {
                     maxLines = lineCount
-                    createFoldText(mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+                    createFoldText(mEnabledClick, mUnderline, extraLength = mExtraLength)
                 }
             } else {
                 maxLines = mEndTextLine
-                createFoldText(mImageRes, mEnabledClick, mUnderline, extraLength = mExtraLength)
+                createFoldText(mEnabledClick, mUnderline, extraLength = mExtraLength)
             }
         }
     }
@@ -587,4 +568,10 @@ class SpecialTextView : AppCompatTextView {
         }
     }
 
+    private val widthPixels by lazy {
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val dm = DisplayMetrics()
+        wm.defaultDisplay.getMetrics(dm)
+        dm.widthPixels
+    }
 }

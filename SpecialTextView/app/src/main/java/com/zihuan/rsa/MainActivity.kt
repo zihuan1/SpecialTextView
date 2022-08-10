@@ -1,5 +1,7 @@
 package com.zihuan.rsa
 
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -86,12 +88,12 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
-        tv_text3.setMultipleText(test)
-                .setExpand("展开",R.color.color_fe68)
-                .setShrink("收起",R.color.color_fe68)
-                .setEllipsize("...")
-                .createFoldText( -1, true, true)
-//                .setFoldText("more", R.color.color_fe68, R.mipmap.ic_bottom_arrow, true, .true)
+        val text = "哈哈哈你们的话说，啊哈哈哈尔滨工业大学威海公安局部解剖学教室里面前面前面前面前面前面前面前面前两天时间段视频呢么事了没办法的吗丁啉发给我打电话呢么。哈哈哈你们的话说，啊哈哈哈尔滨工业大学威海公安局部解剖学教室里面前面前面前面前面前面前面前面前两天时间段视频呢么事了没办法的吗丁啉发给我打电话呢么。\\n哈哈哈你们的话说，啊哈哈哈尔滨工业大学威海公安局部解剖学教室里面前面前面前面前面前面前面前面前两天时间段视频呢么事了没办法的吗丁啉发给我打电话呢么。哈哈哈你们的话说，啊哈哈哈尔滨工业大学威海公安局部解剖学教室里面前面前面前面前面前面前面前面前两天时间段视频呢么事了没办法的吗丁啉发给我打电话呢么。"
+        tv_text3.setMultipleText(text)
+                .setExpand("展开", R.color.color_fe68)
+                .setShrink("收起", R.color.color_fe68)
+                .setEllipsize("…")
+                .createFoldText( true, true)
                 .disableAnim()
     }
 
@@ -171,6 +173,17 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
         spannableString.setSpan(bgColorSpan1, 31, 33, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
         tv_text6.text = spannableString
         tv_text6.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    override fun getResources(): Resources? {
+        //禁止app字体大小跟随系统字体大小调节
+        val resources: Resources? = super.getResources()
+        if (resources != null && resources.getConfiguration().fontScale !== 1.0f) {
+            val configuration: Configuration = resources.getConfiguration()
+            configuration.fontScale = 1.0f
+            resources.updateConfiguration(configuration, resources.getDisplayMetrics())
+        }
+        return resources
     }
 
 }
