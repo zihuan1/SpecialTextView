@@ -65,10 +65,10 @@ class TextBuilder(private val textView: SpecialTextView) {
      * @param imgRes 追加在最后的图片
      * @param enabledClick 是否需要点击事件
      * @param underline 是否需要下划线
-     * @param extra 额外追加的截取长度，比如用两个逗号替换成两个汉字这种情况就需要多截取几个长度
+     * @param extraLength 额外追加的截取长度，比如用两个逗号替换成两个汉字这种情况就需要多截取几个长度
      *  在此处追加图片耦合度比较高应该拆分出来
      */
-    fun createFoldText(enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 1): TextBuilder {
+    fun createFoldText(enabledClick: Boolean = false, underline: Boolean = false, extraLength: Int = 0): TextBuilder {
         textView.createFoldText(enabledClick, underline, extraLength)
         return this
     }

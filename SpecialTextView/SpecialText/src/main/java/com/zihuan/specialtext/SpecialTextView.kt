@@ -237,7 +237,8 @@ class SpecialTextView : AppCompatTextView {
                 //追加文字和图片所占长度
                 textPlusImgLen = allEndText.length.plus(extraLength)
             }
-            mWholeText = mWholeText.substring(0, layout.getLineEnd(targetLine) - textPlusImgLen)
+            val maxTextEndIndex = layout.getLineEnd(targetLine)//当先最后显示的字符的位置
+            mWholeText = mWholeText.substring(0, maxTextEndIndex - textPlusImgLen)
             cutEnter()
             Logger("目标行切割后 $mWholeText")
             mWholeText += allEndText
