@@ -88,13 +88,13 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun setEndText() {
+//        val text = "哈哈哈你们的话说"
         val text = "哈哈哈你们的话说，啊哈哈哈尔滨工业大学威海公安局部解剖学教室里面前面前面前面前面前面前面前面前两天时间段视频呢么事了没办法的吗丁啉发给我打电话呢么。哈哈哈你们的话说，啊哈哈哈尔滨工业大学威海公安局部解剖学教室里面前面前面前面前面前面前面前面前两天时间段视频呢么事了没办法的吗丁啉发给我打电话呢么。\\n哈哈哈你们的话说，啊哈哈哈尔滨工业大学威海公安局部解剖学教室里面前面前面前面前面前面前面前面前两天时间段视频呢么事了没办法的吗丁啉发给我打电话呢么。哈哈哈你们的话说，啊哈哈哈尔滨工业大学威海公安局部解剖学教室里面前面前面前面前面前面前面前面前两天时间段视频呢么事了没办法的吗丁啉发给我打电话呢么。"
         tv_text3.setMultipleText(text)
                 .setExpand("展开", R.color.color_fe68)
                 .setShrink("收起", R.color.color_fe68)
                 .setEllipsize("…")
                 .createFoldText( true, true)
-                .disableAnim()
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)

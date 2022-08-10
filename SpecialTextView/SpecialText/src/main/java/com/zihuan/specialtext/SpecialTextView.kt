@@ -54,7 +54,7 @@ class SpecialTextView : AppCompatTextView {
     }
 
     //是否启用伸缩动画
-    internal var mDisableAnim = true
+    internal var mDisableAnim = false
 
 
     private val specialEntity = ArrayList<SpecialTextEntity>()
@@ -208,6 +208,10 @@ class SpecialTextView : AppCompatTextView {
         Logger("原始字符串 $mWholeText")
         var targetLine = maxLines - 1
         post {
+            if (lineCount < maxLines) {
+                Logger("不设置末尾值")
+                return@post
+            }
             var wholeLen = paint.measureText(mWholeText)
             Logger("设置的最大行数 $maxLines 实际行数 $lineCount 字符串实际宽度 $wholeLen")
             var lineGreaterMax = if (lineCount < maxLines) {//如果实际行数小于设置的最大行数，设置到实际的最后一行
