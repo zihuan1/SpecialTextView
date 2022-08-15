@@ -208,7 +208,7 @@ class SpecialTextView : AppCompatTextView {
         Logger("原始字符串 $mWholeText")
         var targetLine = maxLines - 1
         post {
-            if (lineCount < maxLines) {
+            if (!expand && lineCount <= maxLines) {
                 Logger("不设置末尾值")
                 return@post
             }
