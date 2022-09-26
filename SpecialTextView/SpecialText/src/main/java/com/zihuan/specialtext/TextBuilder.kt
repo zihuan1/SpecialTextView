@@ -10,8 +10,8 @@ class TextBuilder(private val textView: SpecialTextView) {
      * @param enabledClick 是否设置点击事件
      * @param underline 当前字段是否需要下划线 默认不需要
      */
-    fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): TextBuilder {
-        textView.addText(special, color, textSize, enabledClick, underline)
+    fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false,bold: Boolean=false): TextBuilder {
+        textView.addText(special, color, textSize, enabledClick, underline,bold)
         return this
     }
 

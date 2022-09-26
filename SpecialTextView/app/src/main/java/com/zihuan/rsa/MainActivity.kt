@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
                 .setExpand("展开", R.color.color_fe68)
                 .setShrink("收起", R.color.color_fe68)
                 .setEllipsize("…")
-                .createFoldText( true, true)
+                .createFoldText(true, true)
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
                 .addText(" $xh", R.color.colorPrimary)
                 .addText(hh, R.color.colorAccent, enabledClick = true)
                 .addText(yz, R.color.colorAccent, 10, enabledClick = true)
-                .addText(lz, R.color.color_fe68, enabledClick = true)
+                .addText(lz, R.color.color_fe68, enabledClick = true, bold = true)
 //                .addImage(R.mipmap.ic_bottom_arrow)
                 .addText("$f ", R.color.colorPrimary, 10, enabledClick = true)
                 .addImage(R.mipmap.ic_27, 0, 1)

@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
@@ -19,6 +20,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
+import android.text.style.StyleSpan
 
 
 class SpecialTextView : AppCompatTextView {
@@ -149,7 +151,7 @@ class SpecialTextView : AppCompatTextView {
      * @param enabledClick 是否设置点击事件
      * @param underline 当前字段是否需要下划线 默认不需要
      */
-    internal fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false): SpecialTextView {
+    internal fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false, bold: Boolean = false): SpecialTextView {
         if (connectionMode) {
             mWholeText += special
             currentImageStart = mWholeText.length
@@ -164,6 +166,7 @@ class SpecialTextView : AppCompatTextView {
             it.textSize = textSize
             it.enabledClick = enabledClick
             it.underline = underline
+            it.bold = bold
         }
         specialEntity.add(entity)
         return this
@@ -333,7 +336,7 @@ class SpecialTextView : AppCompatTextView {
     }
 
 
-    private fun setSpecial(special: String, color: Int, textSize: Int = 0, startInt: Int = -1) {
+    private fun setSpecial(special: String, color: Int, textSize: Int = 0, startInt: Int = -1, bold: Boolean) {
         if (TextUtils.isEmpty(mWholeText)) {//要设置最后出现的位置
             Log.e(TAG, "mWholeText为空>>>> 请先设置mWholeText")
             return
@@ -347,6 +350,9 @@ class SpecialTextView : AppCompatTextView {
             mSpannableString?.setSpan(ForegroundColorSpan(resources.getColor(color)), start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
             if (textSize != 0) {
                 mSpannableString?.setSpan(AbsoluteSizeSpan(textSize, true), start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+            }
+            if (bold) {
+                mSpannableString?.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
             }
         } catch (e: Exception) {
             Logger("没有发现当前字符>>>> $special  $e")
@@ -511,7 +517,7 @@ class SpecialTextView : AppCompatTextView {
                 var clickTag = special
                 when (type) {
                     TYPE_TEXT -> {
-                        setSpecial(special, color, textSize)
+                        setSpecial(special, color, textSize, bold = bold)
                     }
                     TYPE_IMAGE -> {
                         setImg(res, start, end)

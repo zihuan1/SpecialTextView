@@ -23,7 +23,9 @@ class SpecialTextEntity {
     var textColor = 0
     var enabledClick = false
     var underline = false
+    var bold = false
     var res = 0
+
     //是否由系统设置的起始位置
     var startAuto = true
     var start = -1
