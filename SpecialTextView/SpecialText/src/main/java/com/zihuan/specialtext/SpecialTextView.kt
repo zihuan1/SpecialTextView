@@ -23,7 +23,7 @@ import android.text.style.AbsoluteSizeSpan
 import android.text.style.StyleSpan
 
 
-class SpecialTextView : AppCompatTextView {
+open class SpecialTextView : AppCompatTextView {
     private var TAG = "SpecialTextView"
     private var mWholeText = ""//完整字符串
     private lateinit var mWholeTextCopy: String//完整字符串
