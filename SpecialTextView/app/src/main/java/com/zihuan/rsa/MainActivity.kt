@@ -17,6 +17,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.zihuan.specialtext.SpecialTextEntity
 import com.zihuan.specialtext.SpecialTextView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 //                .insert(3, "a").toString()
         Log.e("测试", a.indexOf("ok").toString() + "---" + a.lastIndexOf("ok").toString())
 //        setOneSpecialText()
-//        setManySpecialText()
+        setManySpecialText()
         funConnectionMode()
 //        funSpecialBackGround()
         setEndText()
@@ -71,10 +72,42 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
 
     //连续设置
     private fun setManySpecialText() {
-        tv_text2.setMultipleText(a)
-                .addText(xh, R.color.colorPrimary, enabledClick = true, underline = true)
-                .addImage(R.mipmap.ic_bottom_arrow, enabledClick = true)
-                .addText(hh, R.color.colorAccent, enabledClick = true, underline = true)
+
+        val textView=tv_text2.setMultipleText(a)
+        val entity=SpecialTextEntity().also {
+            it.special= xh
+            it.color= R.color.colorPrimary
+            it.enabledClick = true
+            it.underline = true
+        }
+        val entity2=SpecialTextEntity().also {
+            it.res= R.mipmap.ic_bottom_arrow
+            it.enabledClick= true
+            it.type = it.TYPE_IMAGE
+
+        }
+        val entity3= SpecialTextEntity().also {
+            it.special = hh
+            it.color = R.color.colorPrimary
+            it.enabledClick = true
+            it.underline = true
+        }
+        //单独设置模式
+        arrayListOf(entity,entity2,entity3).forEach {
+            when(it.type){
+                it.TYPE_TEXT->{
+                    textView.addText(it)
+                }
+                it.TYPE_IMAGE->{
+                    textView.addImage(it)
+                }
+            }
+        }
+//        tv_text2.setMultipleText(a)
+//                .addText(xh, R.color.colorPrimary, enabledClick = true, underline = true)
+//                .addImage(R.mipmap.ic_bottom_arrow, enabledClick = true)
+//                .addText(hh, R.color.colorAccent, enabledClick = true, underline = true)
+        textView
                 .addImage(R.mipmap.ic_launcher, enabledClick = true)
                 .addText(yz, R.color.colorPrimaryDark)
 //                .addText(cs, R.color.colorPrimaryDark, enabledClick = true, underline = true)
@@ -83,6 +116,7 @@ class MainActivity : AppCompatActivity(), SpecialTextView.SpecialTextClick {
                 .addImage(R.mipmap.ic_27, enabledClick = true)
                 .addText(f, R.color.colorPrimary)//设置一个不包含的字符 测试
                 .complete()
+
     }
 
 

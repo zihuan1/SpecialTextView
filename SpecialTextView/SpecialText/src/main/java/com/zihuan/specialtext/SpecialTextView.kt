@@ -2,7 +2,6 @@ package com.zihuan.specialtext
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
@@ -328,7 +327,7 @@ open class SpecialTextView : AppCompatTextView {
             it.end = end
             it.height = height
             it.width = width
-            it.textColor = textColor
+            it.bgColor = textColor
             it.type = it.TYPE_BACKGROUND
         }
         specialEntity.add(entity)
@@ -524,7 +523,7 @@ open class SpecialTextView : AppCompatTextView {
                         clickTag = res.toString()
                     }
                     TYPE_BACKGROUND -> {
-                        setBg(res, textColor, start, end, height, width)
+                        setBg(res, bgColor, start, end, height, width)
                         clickTag = res.toString()
                     }
                 }

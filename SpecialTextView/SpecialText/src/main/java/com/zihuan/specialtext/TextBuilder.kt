@@ -10,8 +10,13 @@ class TextBuilder(private val textView: SpecialTextView) {
      * @param enabledClick 是否设置点击事件
      * @param underline 当前字段是否需要下划线 默认不需要
      */
-    fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false,bold: Boolean=false): TextBuilder {
-        textView.addText(special, color, textSize, enabledClick, underline,bold)
+    fun addText(special: String, color: Int, textSize: Int = 0, enabledClick: Boolean = false, underline: Boolean = false, bold: Boolean = false): TextBuilder {
+        textView.addText(special, color, textSize, enabledClick, underline, bold)
+        return this
+    }
+
+    fun addText(entity: SpecialTextEntity): TextBuilder {
+        addText(entity.special, entity.color, entity.textSize, entity.enabledClick, entity.underline)
         return this
     }
 
@@ -26,6 +31,11 @@ class TextBuilder(private val textView: SpecialTextView) {
      */
     fun addImage(res: Int, start: Int = -1, end: Int = -1, enabledClick: Boolean = false): TextBuilder {
         textView.addImage(res, start, end, enabledClick)
+        return this
+    }
+
+    fun addImage(entity: SpecialTextEntity): TextBuilder {
+        textView.addImage(entity.res, entity.start, entity.end, entity.enabledClick)
         return this
     }
 
@@ -44,6 +54,10 @@ class TextBuilder(private val textView: SpecialTextView) {
         return this
     }
 
+    fun addBackground(entity: SpecialTextEntity): TextBuilder {
+        textView.addBackground(entity.res, entity.special, entity.height, entity.width, entity.bgColor)
+        return this
+    }
     fun setExpand(text: String, color: Int = 0): TextBuilder {
         textView.setExpand(text, color)
         return this

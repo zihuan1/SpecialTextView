@@ -5,6 +5,7 @@ class SpecialTextEntity {
     val TYPE_IMAGE = 1
     val TYPE_BACKGROUND = 2
 
+    constructor()
     constructor(special: String, index: Int) {
         this.special = special
         currentIndex = index
@@ -20,7 +21,7 @@ class SpecialTextEntity {
     var special = ""
     var color = 0
     var textSize = 0
-    var textColor = 0
+    var bgColor = 0
     var enabledClick = false
     var underline = false
     var bold = false
