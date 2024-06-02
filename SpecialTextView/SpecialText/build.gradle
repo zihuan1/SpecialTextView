@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-group = 'com.github.zihuan1'
+apply plugin: 'com.github.dcendents.android-maven'//添加这行后会打包源码和文档
 android {
     compileSdkVersion 28
 
